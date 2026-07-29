@@ -1,7 +1,27 @@
 import { useState } from "react";
+import type { List } from "@todo/shared";
 import { Sidebar } from "./Sidebar";
+import { TodoPane } from "./TodoPane";
 import { authClient } from "./lib/auth-client";
 import { useLists } from "./useLists";
+import { useTodos } from "./useTodos";
+
+function TodosSection({ list }: { list: List }) {
+  const { todos, add, update, remove } = useTodos(list.id);
+
+  if (todos === null) return <p className="text-sm">Loading todos…</p>;
+
+  return (
+    <TodoPane
+      listName={list.name}
+      todos={todos}
+      onAdd={(title) => void add(title)}
+      onToggle={(id, completed) => void update(id, { completed })}
+      onEdit={(id, title) => void update(id, { title })}
+      onDelete={(id) => void remove(id)}
+    />
+  );
+}
 
 export function Shell() {
   const { data: session } = authClient.useSession();
@@ -43,12 +63,7 @@ export function Shell() {
           />
           <main className="flex-1">
             {selected ? (
-              <>
-                <h2 className="mb-2 text-lg font-semibold">{selected.name}</h2>
-                <p className="text-sm text-muted-foreground">
-                  Todos arrive with the next ticket.
-                </p>
-              </>
+              <TodosSection key={selected.id} list={selected} />
             ) : (
               <p className="text-sm text-muted-foreground">
                 Select a list — or create one.

@@ -57,6 +57,17 @@ export const list = sqliteTable("list", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
+export const todo = sqliteTable("todo", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  completed: integer("completed", { mode: "boolean" }).notNull().default(false),
+  listId: text("list_id")
+    .notNull()
+    .references(() => list.id, { onDelete: "cascade" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
 export const verification = sqliteTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
