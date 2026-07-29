@@ -1,10 +1,10 @@
 import { HealthResponseSchema } from "@todo/shared";
 import { useEffect, useState } from "react";
 
-type State = "checking" | "ok" | "unreachable";
+type HealthState = "checking" | "ok" | "unreachable";
 
 export function HealthStatus() {
-  const [state, setState] = useState<State>("checking");
+  const [state, setState] = useState<HealthState>("checking");
 
   useEffect(() => {
     let cancelled = false;
