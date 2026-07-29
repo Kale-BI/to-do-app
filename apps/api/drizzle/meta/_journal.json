@@ -15,6 +15,13 @@
       "when": 1785340156472,
       "tag": "0001_lists",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785340953022,
+      "tag": "0002_todos",
+      "breakpoints": true
     }
   ]
 }

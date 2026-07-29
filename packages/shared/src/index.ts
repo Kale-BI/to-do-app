@@ -44,3 +44,40 @@ export const ListsResponseSchema = z.object({
 });
 
 export type ListsResponse = z.infer<typeof ListsResponseSchema>;
+
+export const TodoSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  completed: z.boolean(),
+});
+
+export type Todo = z.infer<typeof TodoSchema>;
+
+export const TodoTitleSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+});
+
+export type TodoTitle = z.infer<typeof TodoTitleSchema>;
+
+export const UpdateTodoSchema = z
+  .object({
+    title: z.string().trim().min(1).max(200).optional(),
+    completed: z.boolean().optional(),
+  })
+  .refine((value) => value.title !== undefined || value.completed !== undefined, {
+    message: "Nothing to update",
+  });
+
+export type UpdateTodo = z.infer<typeof UpdateTodoSchema>;
+
+export const TodoResponseSchema = z.object({
+  todo: TodoSchema,
+});
+
+export type TodoResponse = z.infer<typeof TodoResponseSchema>;
+
+export const TodosResponseSchema = z.object({
+  todos: z.array(TodoSchema),
+});
+
+export type TodosResponse = z.infer<typeof TodosResponseSchema>;
