@@ -4,7 +4,7 @@
 
 ### Issue tracker
 
-Issues and PRDs live as GitHub Issues, managed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Issues and PRDs live in Linear (project **To-do App**, team Ops), managed via the `linear-server` MCP tools. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
