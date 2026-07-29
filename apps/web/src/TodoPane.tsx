@@ -1,6 +1,20 @@
 import { useState, type FormEvent } from "react";
 import type { Todo } from "@todo/shared";
 
+const FILTERS = [
+  { key: "all", label: "All" },
+  { key: "active", label: "Active" },
+  { key: "completed", label: "Completed" },
+] as const;
+
+type Filter = (typeof FILTERS)[number]["key"];
+
+function matches(filter: Filter, entry: Todo): boolean {
+  if (filter === "active") return !entry.completed;
+  if (filter === "completed") return entry.completed;
+  return true;
+}
+
 export function TodoPane({
   listName,
   todos,
@@ -17,6 +31,9 @@ export function TodoPane({
   onDelete: (id: string) => void;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const visible = todos.filter((entry) => matches(filter, entry));
 
   function handleAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,13 +66,33 @@ export function TodoPane({
           Add todo
         </button>
       </form>
+      <div role="tablist" aria-label="Filter todos" className="flex gap-1">
+        {FILTERS.map(({ key, label }) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={filter === key}
+            onClick={() => setFilter(key)}
+            className={`rounded-md border px-2 py-0.5 text-xs ${
+              filter === key ? "bg-black/10 font-medium dark:bg-white/20" : ""
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       {todos.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           No todos yet — add your first above.
         </p>
+      ) : visible.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {filter === "active" ? "No active todos." : "No completed todos."}
+        </p>
       ) : (
         <ul className="flex flex-col gap-1">
-          {todos.map((entry) =>
+          {visible.map((entry) =>
             editingId === entry.id ? (
               <li key={entry.id}>
                 <form
