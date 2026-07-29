@@ -109,4 +109,48 @@ describe("TodoPane", () => {
 
     expect(onDelete).toHaveBeenCalledWith("t1");
   });
+
+  it("defaults the filter to All, showing every todo", () => {
+    render(<TodoPane listName="Groceries" todos={[milk, bread]} {...noHandlers} />);
+
+    expect(screen.getByRole("tab", { name: "All" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByText("Buy milk")).toBeTruthy();
+    expect(screen.getByText("Buy bread")).toBeTruthy();
+  });
+
+  it("narrows to active-only todos on the Active tab", () => {
+    render(<TodoPane listName="Groceries" todos={[milk, bread]} {...noHandlers} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Active" }));
+
+    expect(screen.getByText("Buy milk")).toBeTruthy();
+    expect(screen.queryByText("Buy bread")).toBeNull();
+  });
+
+  it("narrows to completed-only todos on the Completed tab", () => {
+    render(<TodoPane listName="Groceries" todos={[milk, bread]} {...noHandlers} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Completed" }));
+
+    expect(screen.queryByText("Buy milk")).toBeNull();
+    expect(screen.getByText("Buy bread")).toBeTruthy();
+  });
+
+  it("returns everything when switching back to All", () => {
+    render(<TodoPane listName="Groceries" todos={[milk, bread]} {...noHandlers} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Completed" }));
+    fireEvent.click(screen.getByRole("tab", { name: "All" }));
+
+    expect(screen.getByText("Buy milk")).toBeTruthy();
+    expect(screen.getByText("Buy bread")).toBeTruthy();
+  });
+
+  it("explains an empty filtered view", () => {
+    render(<TodoPane listName="Groceries" todos={[milk]} {...noHandlers} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Completed" }));
+
+    expect(screen.getByText("No completed todos.")).toBeTruthy();
+  });
 });
