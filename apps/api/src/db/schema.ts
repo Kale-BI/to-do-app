@@ -47,6 +47,16 @@ export const account = sqliteTable("account", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
+export const list = sqliteTable("list", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
 export const verification = sqliteTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
