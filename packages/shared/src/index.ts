@@ -19,3 +19,28 @@ export const MeResponseSchema = z.object({
 });
 
 export type MeResponse = z.infer<typeof MeResponseSchema>;
+
+export const ListSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export type List = z.infer<typeof ListSchema>;
+
+export const ListNameSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+});
+
+export type ListName = z.infer<typeof ListNameSchema>;
+
+export const ListResponseSchema = z.object({
+  list: ListSchema,
+});
+
+export type ListResponse = z.infer<typeof ListResponseSchema>;
+
+export const ListsResponseSchema = z.object({
+  lists: z.array(ListSchema),
+});
+
+export type ListsResponse = z.infer<typeof ListsResponseSchema>;
