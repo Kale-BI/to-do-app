@@ -1,7 +1,7 @@
 import { MeResponseSchema } from "@todo/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "./app";
-import { createPgliteDb } from "./db";
+import { createPgliteDb } from "./db/pglite";
 
 const EMAIL = "user@example.com";
 const PASSWORD = "correct-horse-battery";

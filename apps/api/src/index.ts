@@ -3,7 +3,8 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createApp } from "./app";
-import { createDb, createPgliteDb } from "./db";
+import { createDb } from "./db";
+import { createPgliteDb } from "./db/pglite";
 
 // DATABASE_URL means a real Postgres (Neon); otherwise fall back to an
 // embedded PGlite under .data so local dev stays zero-setup.
