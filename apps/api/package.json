@@ -4,20 +4,23 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.4",
     "@hono/node-server": "^2.0.12",
     "@todo/shared": "workspace:*",
     "better-auth": "^1.6.25",
-    "better-sqlite3": "^13.0.1",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.32"
+    "hono": "^4.12.32",
+    "pg": "^8.22.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^26.1.2",
+    "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.23.1",
     "typescript": "^6.0.3",
