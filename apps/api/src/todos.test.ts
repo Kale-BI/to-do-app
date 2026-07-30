@@ -1,7 +1,7 @@
 import { TodoResponseSchema, TodosResponseSchema } from "@todo/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "./app";
-import { createDb } from "./db";
+import { createPgliteDb } from "./db";
 
 type App = ReturnType<typeof createApp>;
 
@@ -56,7 +56,7 @@ describe("todos", () => {
   let listId: string;
 
   beforeEach(async () => {
-    app = createApp(createDb(":memory:"));
+    app = createApp(await createPgliteDb());
     cookie = await registerUser(app, "owner@example.com");
     listId = (await createList(app, cookie, "Groceries")).id;
   });

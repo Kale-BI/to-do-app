@@ -4,7 +4,7 @@ import type { Db } from "./db";
 
 export function createAuth(db: Db) {
   return betterAuth({
-    database: drizzleAdapter(db, { provider: "sqlite" }),
+    database: drizzleAdapter(db, { provider: "pg" }),
     emailAndPassword: { enabled: true },
     secret: process.env.BETTER_AUTH_SECRET ?? "dev-only-secret-not-for-production",
     baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",

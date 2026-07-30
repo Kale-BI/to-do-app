@@ -1,7 +1,7 @@
 import { MeResponseSchema } from "@todo/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "./app";
-import { createDb } from "./db";
+import { createPgliteDb } from "./db";
 
 const EMAIL = "user@example.com";
 const PASSWORD = "correct-horse-battery";
@@ -33,8 +33,8 @@ function sessionCookie(res: Response): string {
 describe("auth", () => {
   let app: ReturnType<typeof createApp>;
 
-  beforeEach(() => {
-    app = createApp(createDb(":memory:"));
+  beforeEach(async () => {
+    app = createApp(await createPgliteDb());
   });
 
   it("registers with email + password and lands signed in", async () => {
