@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -57,10 +57,12 @@ export const list = sqliteTable("list", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
-export const todo = sqliteTable("todo", {
+export const block = sqliteTable("block", {
   id: text("id").primaryKey(),
-  title: text("title").notNull(),
+  text: text("text").notNull(),
   completed: integer("completed", { mode: "boolean" }).notNull().default(false),
+  kind: text("kind").notNull().default("todo"),
+  position: real("position").notNull().default(0),
   listId: text("list_id")
     .notNull()
     .references(() => list.id, { onDelete: "cascade" }),

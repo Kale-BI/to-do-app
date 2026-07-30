@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("filter tabs narrow todos and default to All per list", async ({ page }) => {
+test("filter tabs narrow task lines and default to All per sheet", async ({
+  page,
+}) => {
   const email = `e2e-filter-${Date.now()}@example.com`;
 
   await page.goto("/sign-up");
@@ -10,12 +12,15 @@ test("filter tabs narrow todos and default to All per list", async ({ page }) =>
 
   await page.getByLabel("New list name").fill("Groceries");
   await page.getByRole("button", { name: "Add", exact: true }).click();
-  await page.getByLabel("New todo title").fill("Buy milk");
-  await page.getByRole("button", { name: "Add todo" }).click();
-  await page.getByLabel("New todo title").fill("Buy bread");
-  await page.getByRole("button", { name: "Add todo" }).click();
-  await page.getByLabel("Toggle Buy bread").click();
-  await expect(page.getByLabel("Toggle Buy bread")).toBeChecked();
+
+  await page.getByRole("button", { name: /start typing, or press \//i }).click();
+  await page.keyboard.type("Buy milk");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Buy bread");
+
+  await page.getByText("Buy bread").hover();
+  await page.getByRole("button", { name: "Cross off Buy bread" }).click();
+  await expect(page.getByRole("button", { name: "Uncross Buy bread" })).toBeVisible();
 
   await expect(page.getByRole("tab", { name: "All" })).toHaveAttribute(
     "aria-selected",
@@ -34,7 +39,7 @@ test("filter tabs narrow todos and default to All per list", async ({ page }) =>
   await expect(page.getByText("Buy milk")).toBeVisible();
   await expect(page.getByText("Buy bread")).toBeVisible();
 
-  // The filter is per list: a second list starts back on All.
+  // The filter is per sheet: a second list starts back on All.
   await page.getByLabel("New list name").fill("Errands");
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Errands" })).toBeVisible();

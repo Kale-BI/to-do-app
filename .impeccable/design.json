@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-30T00:00:00Z",
+  "title": "Design System: To-Do",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Typewriter Ink",
+        "canonical": "oklch(0.27 0.015 80)",
+        "night": "oklch(0.26 0.018 75)",
+        "tonalRamp": ["oklch(0.15 0.015 80)", "oklch(0.26 0.015 80)", "oklch(0.38 0.015 80)", "oklch(0.5 0.015 80)", "oklch(0.61 0.015 80)", "oklch(0.72 0.015 80)", "oklch(0.84 0.015 80)", "oklch(0.95 0.015 80)"]
+      },
+      "ink-faded": {
+        "role": "primary",
+        "displayName": "Faded Ink",
+        "canonical": "oklch(0.54 0.012 80)",
+        "night": "oklch(0.52 0.015 75)",
+        "tonalRamp": ["oklch(0.15 0.012 80)", "oklch(0.26 0.012 80)", "oklch(0.38 0.012 80)", "oklch(0.5 0.012 80)", "oklch(0.61 0.012 80)", "oklch(0.72 0.012 80)", "oklch(0.84 0.012 80)", "oklch(0.95 0.012 80)"]
+      },
+      "ink-faint": {
+        "role": "primary",
+        "displayName": "Faint Ink",
+        "canonical": "oklch(0.7 0.012 85)",
+        "night": "oklch(0.68 0.015 80)",
+        "tonalRamp": ["oklch(0.15 0.012 85)", "oklch(0.26 0.012 85)", "oklch(0.38 0.012 85)", "oklch(0.5 0.012 85)", "oklch(0.61 0.012 85)", "oklch(0.72 0.012 85)", "oklch(0.84 0.012 85)", "oklch(0.95 0.012 85)"]
+      },
+      "ribbon": {
+        "role": "secondary",
+        "displayName": "Ribbon Red",
+        "canonical": "oklch(0.5 0.17 27)",
+        "night": "oklch(0.49 0.16 27)",
+        "tonalRamp": ["oklch(0.15 0.17 27)", "oklch(0.26 0.17 27)", "oklch(0.38 0.17 27)", "oklch(0.5 0.17 27)", "oklch(0.61 0.17 27)", "oklch(0.72 0.17 27)", "oklch(0.84 0.17 27)", "oklch(0.95 0.17 27)"]
+      },
+      "ribbon-faded": {
+        "role": "secondary",
+        "displayName": "Ribbon Faded",
+        "canonical": "oklch(0.62 0.13 27)",
+        "night": "oklch(0.6 0.12 27)",
+        "tonalRamp": ["oklch(0.15 0.13 27)", "oklch(0.26 0.13 27)", "oklch(0.38 0.13 27)", "oklch(0.5 0.13 27)", "oklch(0.61 0.13 27)", "oklch(0.72 0.13 27)", "oklch(0.84 0.13 27)", "oklch(0.95 0.13 27)"]
+      },
+      "pencil": {
+        "role": "tertiary",
+        "displayName": "Pencil",
+        "canonical": "oklch(0.48 0.01 80)",
+        "night": "oklch(0.46 0.012 75)",
+        "tonalRamp": ["oklch(0.15 0.01 80)", "oklch(0.26 0.01 80)", "oklch(0.38 0.01 80)", "oklch(0.5 0.01 80)", "oklch(0.61 0.01 80)", "oklch(0.72 0.01 80)", "oklch(0.84 0.01 80)", "oklch(0.95 0.01 80)"]
+      },
+      "highlight": {
+        "role": "tertiary",
+        "displayName": "Highlighter",
+        "canonical": "oklch(0.9 0.07 90)",
+        "night": "oklch(0.87 0.08 88)",
+        "tonalRamp": ["oklch(0.15 0.07 90)", "oklch(0.26 0.07 90)", "oklch(0.38 0.07 90)", "oklch(0.5 0.07 90)", "oklch(0.61 0.07 90)", "oklch(0.72 0.07 90)", "oklch(0.84 0.07 90)", "oklch(0.95 0.07 90)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm-White Paper",
+        "canonical": "oklch(0.965 0.012 95)",
+        "night": "oklch(0.93 0.022 90)",
+        "tonalRamp": ["oklch(0.15 0.012 95)", "oklch(0.26 0.012 95)", "oklch(0.38 0.012 95)", "oklch(0.5 0.012 95)", "oklch(0.61 0.012 95)", "oklch(0.72 0.012 95)", "oklch(0.84 0.012 95)", "oklch(0.95 0.012 95)"]
+      },
+      "paper-shade": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "oklch(0.93 0.014 95)",
+        "night": "oklch(0.89 0.024 90)",
+        "tonalRamp": ["oklch(0.15 0.014 95)", "oklch(0.26 0.014 95)", "oklch(0.38 0.014 95)", "oklch(0.5 0.014 95)", "oklch(0.61 0.014 95)", "oklch(0.72 0.014 95)", "oklch(0.84 0.014 95)", "oklch(0.95 0.014 95)"]
+      },
+      "paper-edge": {
+        "role": "neutral",
+        "displayName": "Paper Edge",
+        "canonical": "oklch(0.88 0.016 95)",
+        "night": "oklch(0.84 0.026 88)",
+        "tonalRamp": ["oklch(0.15 0.016 95)", "oklch(0.26 0.016 95)", "oklch(0.38 0.016 95)", "oklch(0.5 0.016 95)", "oklch(0.61 0.016 95)", "oklch(0.72 0.016 95)", "oklch(0.84 0.016 95)", "oklch(0.95 0.016 95)"]
+      },
+      "desk": {
+        "role": "neutral",
+        "displayName": "Olive Blotter (day) / Dark Wood (night)",
+        "canonical": "oklch(0.48 0.045 125)",
+        "night": "oklch(0.23 0.02 65)",
+        "tonalRamp": ["oklch(0.15 0.045 125)", "oklch(0.26 0.045 125)", "oklch(0.38 0.045 125)", "oklch(0.5 0.045 125)", "oklch(0.61 0.045 125)", "oklch(0.72 0.045 125)", "oklch(0.84 0.045 125)", "oklch(0.95 0.045 125)"]
+      },
+      "desk-text": {
+        "role": "neutral",
+        "displayName": "Desk Text",
+        "canonical": "oklch(0.975 0.008 100)",
+        "night": "oklch(0.87 0.025 85)",
+        "tonalRamp": ["oklch(0.15 0.008 100)", "oklch(0.26 0.008 100)", "oklch(0.38 0.008 100)", "oklch(0.5 0.008 100)", "oklch(0.61 0.008 100)", "oklch(0.72 0.008 100)", "oklch(0.84 0.008 100)", "oklch(0.95 0.008 100)"]
+      },
+      "lamp": {
+        "role": "neutral",
+        "displayName": "Lamp Pool",
+        "canonical": "transparent",
+        "night": "oklch(0.84 0.07 85 / 0.3)",
+        "tonalRamp": ["oklch(0.15 0.07 85)", "oklch(0.26 0.07 85)", "oklch(0.38 0.07 85)", "oklch(0.5 0.07 85)", "oklch(0.61 0.07 85)", "oklch(0.72 0.07 85)", "oklch(0.84 0.07 85)", "oklch(0.95 0.07 85)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Sheet Title", "purpose": "The typed uppercase list title at the top of each sheet; an editable input styled as typed capitals." },
+      "headline": { "displayName": "Heading 1", "purpose": "h1 blocks typed on the sheet; uppercase with 0.07em tracking." },
+      "title": { "displayName": "Heading 2", "purpose": "h2 blocks and the auth form subtitle; uppercase with 0.05em tracking." },
+      "body": { "displayName": "Writing Line", "purpose": "Todos, paragraphs, placeholders, and empty states. The 1.9 leading is the typewriter's line spacing and gives the strike room to draw." },
+      "label": { "displayName": "Desk Label", "purpose": "Uppercase Courier Prime for everything around the paper: buttons (700 weight, 0.1em), filter tabs, field labels, session strip, hints." }
+    },
+    "shadows": [
+      { "name": "paper", "value": "0 1px 2px oklch(0 0 0 / 0.2), 0 14px 34px -10px oklch(0 0 0 / 0.4)", "purpose": "Every paper surface resting on the desk: contact edge plus soft drop." },
+      { "name": "stacked-sheet", "value": "0 1px 2px oklch(0 0 0 / 0.25)", "purpose": "The rotated paper-shade sheets underneath a sheet-stack." },
+      { "name": "menu-scrap", "value": "0 2px 4px oklch(0 0 0 / 0.18), 0 12px 28px -8px oklch(0 0 0 / 0.4)", "purpose": "The slash-menu paper scrap, hovering slightly closer than the sheet." },
+      { "name": "desk-vignette", "value": "radial-gradient(140% 120% at 50% 30%, transparent 40%, oklch(0 0 0 / 0.22) 100%)", "purpose": "Ambient darkening at the desk's edges (background layer, not a box-shadow)." }
+    ],
+    "motion": [
+      { "name": "sheet-settle", "value": "0.28s cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "A sheet entering the desk: drops ~10px and un-rotates 0.3 degrees into place." },
+      { "name": "strike-draw", "value": "0.4s cubic-bezier(0.3, 0, 0.2, 1)", "purpose": "The red completion strike drawing left-to-right via stroke-dashoffset (pathLength 100)." },
+      { "name": "menu-in", "value": "0.12s ease-out", "purpose": "The slash-menu scrap fading up 3px at 0.99 scale." },
+      { "name": "micro", "value": "0.12s ease-out", "purpose": "Button ink-fill hover and margin-tool reveal." },
+      { "name": "stack-shift", "value": "150ms ease-out", "purpose": "Sidebar sheet straightening and sliding right on selection (transition-transform)." },
+      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce disables all animations and transitions; the strike renders fully drawn", "purpose": "Accessibility contract." }
+    ],
+    "textures": [
+      { "name": "grain", "value": "inline SVG feTurbulence (fractalNoise 0.9, 2 octaves) at 5% alpha, 240x240 tile — var(--grain)", "purpose": "Layered over every paper background." },
+      { "name": "linen", "value": "inline SVG feTurbulence (fractalNoise 0.08 0.4, 2 octaves) at 5% alpha, 200x200 tile — var(--linen)", "purpose": "Layered over the desk background." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Typed Button",
+      "kind": "button",
+      "refersTo": "button-typed",
+      "description": "A typed label stamped in a thin frame; inverts to ink fill on hover, presses 1px on active.",
+      "html": "<button class=\"ds-typed-btn\">Sign out</button>",
+      "css": ".ds-typed-btn { font-family: 'Courier Prime', 'Courier New', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.6875rem; color: var(--ink, oklch(0.27 0.015 80)); background: transparent; border: 1.5px solid currentColor; border-radius: 2px; padding: 0.375rem 0.875rem; cursor: pointer; transition: background-color 0.12s ease-out, color 0.12s ease-out; } .ds-typed-btn:hover { background: var(--ink, oklch(0.27 0.015 80)); color: var(--paper, oklch(0.965 0.012 95)); border-color: var(--ink, oklch(0.27 0.015 80)); } .ds-typed-btn:active { transform: translateY(1px); } .ds-typed-btn:focus-visible { outline: 1.5px dashed var(--pencil, oklch(0.48 0.01 80)); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ribbon Button (destructive)",
+      "kind": "button",
+      "refersTo": "button-typed",
+      "description": "The typed button in ribbon red for destructive acts — 'Tear up' a sheet.",
+      "html": "<button class=\"ds-typed-btn-ribbon\">Tear up</button>",
+      "css": ".ds-typed-btn-ribbon { font-family: 'Courier Prime', 'Courier New', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.625rem; color: var(--ribbon, oklch(0.5 0.17 27)); background: transparent; border: 1.5px solid currentColor; border-radius: 2px; padding: 0.125rem 0.5rem; cursor: pointer; transition: background-color 0.12s ease-out, color 0.12s ease-out; } .ds-typed-btn-ribbon:hover { background: var(--ink, oklch(0.27 0.015 80)); color: var(--paper, oklch(0.965 0.012 95)); border-color: var(--ink, oklch(0.27 0.015 80)); } .ds-typed-btn-ribbon:focus-visible { outline: 1.5px dashed var(--pencil, oklch(0.48 0.01 80)); outline-offset: 3px; }"
+    },
+    {
+      "name": "Typed Input",
+      "kind": "input",
+      "refersTo": "input-typed",
+      "description": "A line on the page you type onto: underline-only field, typewriter face, ink caret.",
+      "html": "<label class=\"ds-typed-field\"><span class=\"ds-typed-field-label\">Email</span><input class=\"ds-typed-input\" type=\"email\" placeholder=\"you@example.com\" /></label>",
+      "css": ".ds-typed-field { display: flex; flex-direction: column; gap: 0.25rem; } .ds-typed-field-label { font-family: 'Courier Prime', 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.6875rem; color: var(--ink-faded, oklch(0.54 0.012 80)); } .ds-typed-input { font-family: 'Special Elite', 'Courier Prime', monospace; font-size: 0.9375rem; background: transparent; border: 0; border-bottom: 1px solid var(--ink-faint, oklch(0.7 0.012 85)); border-radius: 0; padding: 0.25rem 0.125rem; color: var(--ink, oklch(0.27 0.015 80)); caret-color: var(--ink, oklch(0.27 0.015 80)); } .ds-typed-input::placeholder { color: var(--ink-faded, oklch(0.54 0.012 80)); } .ds-typed-input:focus { outline: none; border-bottom: 1px solid var(--ink, oklch(0.27 0.015 80)); box-shadow: 0 1px 0 var(--ink, oklch(0.27 0.015 80)); }"
+    },
+    {
+      "name": "Paper Sheet",
+      "kind": "card",
+      "refersTo": "sheet-paper",
+      "description": "The material every surface is made of: grained warm-white paper resting on a slim stack, casting the paper shadow.",
+      "html": "<div class=\"ds-sheet-stack\"><div class=\"ds-paper\"><h3 class=\"ds-paper-title\">Errands</h3><hr class=\"ds-paper-rule\" /><p class=\"ds-paper-line\">Pick up the dry cleaning</p></div></div>",
+      "css": ".ds-sheet-stack { position: relative; max-width: 20rem; } .ds-sheet-stack::before, .ds-sheet-stack::after { content: \"\"; position: absolute; inset: 0; background: var(--paper-shade, oklch(0.93 0.014 95)); border-radius: 1px; box-shadow: 0 1px 2px oklch(0 0 0 / 0.25); z-index: -1; } .ds-sheet-stack::before { transform: rotate(0.5deg) translate(3px, 2px); } .ds-sheet-stack::after { transform: rotate(-0.4deg) translate(-2px, 4px); } .ds-paper { background-color: var(--paper, oklch(0.965 0.012 95)); background-image: var(--grain); color: var(--ink, oklch(0.27 0.015 80)); border-radius: 1px; box-shadow: 0 1px 2px oklch(0 0 0 / 0.2), 0 14px 34px -10px oklch(0 0 0 / 0.4); padding: 1.5rem 1.75rem; } .ds-paper-title { font-family: 'Special Elite', 'Courier Prime', monospace; font-weight: 400; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0; } .ds-paper-rule { border: 0; border-top: 1px solid oklch(0.27 0.015 80 / 0.25); margin: 0.5rem 0 1rem; } .ds-paper-line { font-family: 'Special Elite', 'Courier Prime', monospace; font-size: 0.9375rem; line-height: 1.9; margin: 0; }"
+    },
+    {
+      "name": "Struck Task Line (signature)",
+      "kind": "custom",
+      "description": "A completed to-do: no checkbox — a wavering ribbon-red SVG stroke drawn over faded-ink typewriter text.",
+      "html": "<div class=\"ds-struck-line\"><span class=\"ds-struck-text\">Water the plants</span><svg class=\"ds-strike\" viewBox=\"0 0 100 24\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path pathLength=\"100\" d=\"M 1 12.4 C 20 10.8, 45 13.6, 66 11.4 S 96 12.8, 99 11.2\" /></svg></div>",
+      "css": ".ds-struck-line { position: relative; display: inline-block; font-family: 'Special Elite', 'Courier Prime', monospace; font-size: 0.9375rem; line-height: 1.9; color: var(--ink-faded, oklch(0.54 0.012 80)); } .ds-strike { position: absolute; top: 0; left: -4px; width: calc(100% + 8px); height: 1.9em; pointer-events: none; } .ds-strike path { stroke: var(--ribbon, oklch(0.5 0.17 27)); stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: ds-strike-draw 0.4s cubic-bezier(0.3, 0, 0.2, 1) forwards; } @keyframes ds-strike-draw { to { stroke-dashoffset: 0; } } @media (prefers-reduced-motion: reduce) { .ds-strike path { animation: none; stroke-dashoffset: 0; } }"
+    },
+    {
+      "name": "Slash Menu",
+      "kind": "custom",
+      "refersTo": "menu-paper",
+      "description": "The '/' block menu: a scrap of grained paper listing the five core blocks with pencil icons and desk-label markdown hints.",
+      "html": "<div class=\"ds-menu-paper\" role=\"listbox\"><button class=\"ds-menu-row ds-menu-row-active\" role=\"option\" aria-selected=\"true\"><svg class=\"ds-menu-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 8 h 12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M2 12 h 8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\"/><path d=\"M2 4 h 10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\"/></svg><span class=\"ds-menu-label\">To-do</span><span class=\"ds-menu-hint\">[]</span></button><button class=\"ds-menu-row\" role=\"option\"><svg class=\"ds-menu-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2.5 3.5 v 9 M8.5 3.5 v 9 M2.5 8 h 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M12 6.2 l 1.6 -1.2 v 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span class=\"ds-menu-label\">Heading 1</span><span class=\"ds-menu-hint\">#</span></button><button class=\"ds-menu-row\" role=\"option\"><svg class=\"ds-menu-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 8 C 6 7.5, 10 8.5, 14 8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><span class=\"ds-menu-label\">Divider</span><span class=\"ds-menu-hint\">---</span></button></div>",
+      "css": ".ds-menu-paper { width: 14rem; background-color: var(--paper, oklch(0.965 0.012 95)); background-image: var(--grain); color: var(--ink, oklch(0.27 0.015 80)); border: 1px solid var(--paper-edge, oklch(0.88 0.016 95)); border-radius: 2px; box-shadow: 0 2px 4px oklch(0 0 0 / 0.18), 0 12px 28px -8px oklch(0 0 0 / 0.4); padding: 0.375rem 0; animation: ds-menu-in 0.12s ease-out; } @keyframes ds-menu-in { from { opacity: 0; transform: translateY(3px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } } .ds-menu-row { display: flex; width: 100%; align-items: center; gap: 0.625rem; padding: 0.375rem 0.75rem; background: transparent; border: 0; text-align: left; cursor: pointer; color: inherit; } .ds-menu-row-active, .ds-menu-row:hover { background: oklch(0.27 0.015 80 / 0.08); } .ds-menu-icon { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--ink-faded, oklch(0.54 0.012 80)); } .ds-menu-label { font-family: 'Special Elite', 'Courier Prime', monospace; font-size: 0.875rem; flex: 1; } .ds-menu-hint { font-family: 'Courier Prime', 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; color: var(--ink-faded, oklch(0.54 0.012 80)); }"
+    },
+    {
+      "name": "Filter Tab with Pencil Ring",
+      "kind": "nav",
+      "description": "Desk-label filter tabs; the active one is circled by a hand-drawn pencil ellipse.",
+      "html": "<div class=\"ds-filter-row\" role=\"tablist\"><button class=\"ds-filter-tab ds-filter-tab-active\" role=\"tab\" aria-selected=\"true\">All<svg class=\"ds-pencil-ring-svg\" viewBox=\"0 0 100 36\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M 8 20 C 6 8, 30 3, 55 4 C 82 5, 97 10, 95 20 C 93 30, 68 33.5, 42 32.5 C 20 31.5, 9 28, 10 21\" /></svg></button><button class=\"ds-filter-tab\" role=\"tab\">Active</button><button class=\"ds-filter-tab\" role=\"tab\">Completed</button></div>",
+      "css": ".ds-filter-row { display: flex; align-items: baseline; gap: 1rem; } .ds-filter-tab { position: relative; font-family: 'Courier Prime', 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.6875rem; color: var(--ink-faded, oklch(0.54 0.012 80)); background: transparent; border: 0; padding: 0.125rem 0.25rem; cursor: pointer; } .ds-filter-tab:hover, .ds-filter-tab-active { color: var(--ink, oklch(0.27 0.015 80)); } .ds-filter-tab:focus-visible { outline: 1.5px dashed var(--pencil, oklch(0.48 0.01 80)); outline-offset: 3px; } .ds-pencil-ring-svg { position: absolute; inset: -0.125rem -0.375rem; width: calc(100% + 0.75rem); height: calc(100% + 0.25rem); pointer-events: none; } .ds-pencil-ring-svg path { stroke: var(--pencil, oklch(0.48 0.01 80)); stroke-width: 1.25; fill: none; vector-effect: non-scaling-stroke; }"
+    },
+    {
+      "name": "Margin Tool",
+      "kind": "custom",
+      "description": "A hover-revealed pencil-mark affordance in the page margin: hidden at rest, revealed by row hover or focus; delete cross turns ribbon on hover.",
+      "html": "<div class=\"ds-line-row\"><span class=\"ds-line-text\">Buy stamps</span><button class=\"ds-line-tool\" aria-label=\"Delete line\" title=\"Delete line\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3.6 3.4 C 6.5 6.4, 9.5 9.6, 12.5 12.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M12.4 3.6 C 9.4 6.5, 6.4 9.5, 3.5 12.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg></button></div>",
+      "css": ".ds-line-row { display: flex; align-items: center; gap: 0.5rem; } .ds-line-text { font-family: 'Special Elite', 'Courier Prime', monospace; font-size: 0.9375rem; line-height: 1.9; color: var(--ink, oklch(0.27 0.015 80)); } .ds-line-tool { width: 1.25rem; height: 1.25rem; padding: 0; background: transparent; border: 0; cursor: pointer; color: var(--ink-faded, oklch(0.54 0.012 80)); opacity: 0; transition: opacity 0.12s ease-out; } .ds-line-row:hover .ds-line-tool, .ds-line-tool:focus-visible { opacity: 1; } .ds-line-tool:hover { color: var(--ribbon, oklch(0.5 0.17 27)); } .ds-line-tool:focus-visible { outline: 1.5px dashed var(--pencil, oklch(0.48 0.01 80)); outline-offset: 3px; } .ds-line-tool svg { width: 100%; height: 100%; } @media (hover: none) { .ds-line-tool { opacity: 0.6; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Typed Sheet on the Desk",
+    "overview": "Every to-do list is a physical sheet of paper typed on an old writing machine, lying on a desk. The desk is the app chrome; the sheet is the interface. Nothing here looks like a program: there are no checkbox rows, no toolbars, no dialogs floating in a void. Editing happens on the page itself, affordances appear like pencil marks in the margin when the hand hovers a line, and finishing a task means drawing a ribbon-red stroke through it. The world reaches the whole app — the auth card is a typed sheet, the sidebar is a stack of sheets, even the loading copy speaks in desk language.\n\nThe system has exactly two materials and two voices. Materials: warm-white grained paper (everything you write on) and the desk beneath it (olive blotter by day, lamp-lit dark wood by night). Voices: Special Elite — the unsteady typewriter face — for everything typed on paper, and Courier Prime — uppercase, letterspaced — for desk labels and controls. Color is nearly monochrome ink-on-paper; the single chromatic accent is ribbon red, reserved for the strike, destructive actions, and error ink.\n\nThis build refuses the CRUD arrangement entirely (pinned direction, 2026-07-30). It is quiet, tactile, and paper-first: hand-drawn SVG strokes instead of geometric primitives, near-square corners, dashed pencil focus outlines, and motion that reads as paper settling and pen drawing rather than UI transitioning.",
+    "keyCharacteristics": [
+      "Paper is the only surface; the desk is the only backdrop.",
+      "No checkboxes anywhere — completion is a red strike drawn over the line.",
+      "Two type voices: typewriter ink on paper, uppercase Courier desk labels.",
+      "One chromatic accent (ribbon red) with one job family: strike, destroy, error.",
+      "Affordances hide in the margins until hover/focus, like pencil marks.",
+      "Dark mode is a scene change (night desk under a lamp), not a palette inversion."
+    ],
+    "rules": [
+      { "name": "The One Ribbon Rule", "body": "Ribbon red is the only saturated color in the app, and it means exactly one family of things: crossed off, torn up, or gone wrong. Never use it decoratively.", "section": "colors" },
+      { "name": "The No Pure Black Rule", "body": "Ink is warm and soft (oklch(0.27 0.015 80)); shadows are the only place true black (as alpha) appears.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "If it's written on paper, it's Special Elite. If it labels the desk or a control, it's uppercase Courier Prime. No third font, no exceptions — including loading and error copy.", "section": "typography" },
+      { "name": "The Uppercase Headings Rule", "body": "Sheet headings (title, h1, h2) are uppercase with positive tracking, like typed capitals; body lines are sentence case.", "section": "typography" },
+      { "name": "The Paper Casts Rule", "body": "Only paper casts shadows. Buttons, inputs, icons, and text never carry their own box-shadow; they are marks on a surface, not surfaces.", "section": "elevation" },
+      { "name": "The Grain Rule", "body": "Paper is never flat color: every paper surface layers the shared --grain SVG turbulence texture; the desk layers --linen.", "section": "elevation" },
+      { "name": "The Drawn Line Rule", "body": "Any line that represents a hand gesture — strike, ring, divider, icon stroke — is an SVG path with a wobble, never a straight CSS border or text-decoration.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do put every writable surface on .paper with the grain texture and the paper shadow; put every ambient label directly on the desk in desk voice.",
+      "Do draw completion as the ribbon strike (.strike-path + strike-draw) and fade struck text to --ink-faded — struck lines stay on the page and stay legible.",
+      "Do hide per-line actions with .line-tool until hover/focus-within, and keep them at resting opacity 0.6 on touch devices.",
+      "Do use .focus-pencil (1.5px dashed pencil outline, 3px offset) on every interactive element, and .typed-btn / .typed-input for controls — ink-inverting hover, underline-only fields.",
+      "Do confirm destruction in place, on the paper, in the world's language (\"Tear up…?\") — never in a modal.",
+      "Do honor prefers-reduced-motion: no settle, no menu-in, strike pre-drawn.",
+      "Do author new colors in OKLCH and give every token a night-desk value in .dark that re-lights the scene rather than inverting it."
+    ],
+    "donts": [
+      "Don't render a checkbox, toggle, or tick mark anywhere — completion is the strike; this is a pinned product commitment.",
+      "Don't use ribbon red for anything but strike/destroy/error, and don't introduce a second accent color.",
+      "Don't use rounded corners beyond 3px, filled buttons at rest, boxed inputs, or drop shadows on non-paper elements.",
+      "Don't pull in an icon library or use straight CSS lines for strikes, dividers, or rings — drawn lines are wobbling SVG paths in the icon grammar.",
+      "Don't use a third typeface, non-uppercase desk labels, or text-decoration: line-through.",
+      "Don't open dialogs, drawers, or side panels for editing — the page is the interface; the slash menu's paper scrap is the only floating surface."
+    ]
+  }
+}

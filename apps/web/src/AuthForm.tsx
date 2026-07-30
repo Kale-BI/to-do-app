@@ -28,44 +28,57 @@ export function AuthForm({
   }
 
   return (
-    <section className="w-full max-w-sm rounded-lg border p-6">
-      <h2 className="mb-4 text-lg font-semibold">{title}</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1 text-sm">
-          Email
-          <input
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            className="rounded-md border px-3 py-2"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Password
-          <input
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete="current-password"
-            className="rounded-md border px-3 py-2"
-          />
-        </label>
-        {error ? (
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-        ) : null}
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-black px-3 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-black"
-        >
-          {submitLabel}
-        </button>
-      </form>
-      <p className="mt-4 text-sm">{footer}</p>
-    </section>
+    <main className="flex min-h-screen items-center justify-center p-6">
+      <section className="paper sheet-stack sheet-enter w-full max-w-sm px-8 py-10 sm:px-10">
+        <h1 className="typed text-center text-lg tracking-[0.16em] text-ink uppercase">
+          To-Do
+        </h1>
+        <hr className="mx-auto mt-3 w-16 border-t border-ink/30" />
+        <hr className="mx-auto mt-0.5 mb-8 w-16 border-t border-ink/30" />
+        <h2 className="typed mb-6 text-[1.0625rem] tracking-[0.05em] text-ink uppercase">
+          {title}
+        </h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <label className="flex flex-col gap-1">
+            <span className="desk-label text-[0.6875rem] text-ink-faded">
+              Email
+            </span>
+            <input
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className="typed-input w-full text-[0.9375rem]"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="desk-label text-[0.6875rem] text-ink-faded">
+              Password
+            </span>
+            <input
+              name="password"
+              type="password"
+              required
+              minLength={8}
+              autoComplete="current-password"
+              className="typed-input w-full text-[0.9375rem]"
+            />
+          </label>
+          {error ? (
+            <p role="alert" className="typed text-sm text-ribbon">
+              {error} — check it and try again.
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={busy}
+            className="typed-btn focus-pencil mt-2 w-full py-2.5 text-xs text-ink"
+          >
+            {busy ? "One moment…" : submitLabel}
+          </button>
+        </form>
+        <p className="typed mt-6 text-center text-sm text-ink-faded">{footer}</p>
+      </section>
+    </main>
   );
 }
