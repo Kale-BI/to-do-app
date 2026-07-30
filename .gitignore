@@ -7,3 +7,4 @@ playwright-report/
 .data/
 .vercel
 .env*
+apps/web/api/_bundle.js

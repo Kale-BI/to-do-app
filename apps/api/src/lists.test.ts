@@ -1,7 +1,7 @@
 import { ListResponseSchema, ListsResponseSchema } from "@todo/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "./app";
-import { createPgliteDb } from "./db";
+import { createPgliteDb } from "./db/pglite";
 
 type App = ReturnType<typeof createApp>;
 

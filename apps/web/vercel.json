@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @todo/api run db:migrate && pnpm run build",
+  "buildCommand": "pnpm --filter @todo/api run db:migrate && pnpm run build:api && pnpm run build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }

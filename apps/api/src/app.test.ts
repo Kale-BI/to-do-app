@@ -1,7 +1,7 @@
 import { HealthResponseSchema } from "@todo/shared";
 import { describe, expect, it } from "vitest";
 import { createApp } from "./app";
-import { createPgliteDb } from "./db";
+import { createPgliteDb } from "./db/pglite";
 
 describe("GET /api/health", () => {
   it("responds 200 with a payload matching the shared health contract", async () => {
