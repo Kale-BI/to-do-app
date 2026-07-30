@@ -166,6 +166,66 @@ describe("Sheet", () => {
     expect(api.insert).toHaveBeenCalledWith("b1", "todo", "");
   });
 
+  it("demotes an empty formatted line to a paragraph on Enter", () => {
+    const emptyTodo: Block[] = [
+      { id: "e1", text: "Buy milk", completed: false, kind: "todo", position: 1 },
+      { id: "e2", text: "", completed: false, kind: "todo", position: 2 },
+    ];
+    const { api, container } = renderSheet({ blocks: emptyTodo });
+
+    const el = container.querySelectorAll<HTMLElement>(".block-text")[1]!;
+    el.focus();
+    fireEvent.keyDown(el, { key: "Enter" });
+
+    expect(api.convert).toHaveBeenCalledWith("e2", "p", "");
+    expect(api.insert).not.toHaveBeenCalled();
+  });
+
+  it("demotes an empty heading to a paragraph on Enter", () => {
+    const emptyHeading: Block[] = [
+      { id: "h1", text: "", completed: false, kind: "h2", position: 1 },
+      { id: "h2", text: "Buy milk", completed: false, kind: "todo", position: 2 },
+    ];
+    const { api, container } = renderSheet({ blocks: emptyHeading });
+
+    const el = lineEl(container, "h2");
+    el.focus();
+    fireEvent.keyDown(el, { key: "Enter" });
+
+    expect(api.convert).toHaveBeenCalledWith("h1", "p", "");
+    expect(api.insert).not.toHaveBeenCalled();
+  });
+
+  it("removes an empty paragraph on Enter instead of stacking placeholders", () => {
+    const emptyParagraph: Block[] = [
+      { id: "p1", text: "Buy milk", completed: false, kind: "todo", position: 1 },
+      { id: "p2", text: "", completed: false, kind: "p", position: 2 },
+    ];
+    const { api, container } = renderSheet({ blocks: emptyParagraph });
+
+    const el = lineEl(container, "p");
+    el.focus();
+    fireEvent.keyDown(el, { key: "Enter" });
+
+    expect(api.remove).toHaveBeenCalledWith("p2");
+    expect(api.insert).not.toHaveBeenCalled();
+  });
+
+  it("keeps the sheet's only line through Enter when it is an empty paragraph", () => {
+    const lone: Block[] = [
+      { id: "solo", text: "", completed: false, kind: "p", position: 1 },
+    ];
+    const { api, container } = renderSheet({ blocks: lone });
+
+    const el = lineEl(container, "p");
+    el.focus();
+    fireEvent.keyDown(el, { key: "Enter" });
+
+    expect(api.remove).not.toHaveBeenCalled();
+    expect(api.convert).not.toHaveBeenCalled();
+    expect(api.insert).not.toHaveBeenCalled();
+  });
+
   it("opens the slash menu on /, navigates, and applies a block", () => {
     const { api, container } = renderSheet();
 

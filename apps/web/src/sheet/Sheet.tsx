@@ -124,6 +124,24 @@ export function Sheet({
       focusBlock(created.id, 0);
       return;
     }
+    if (before === "" && after === "") {
+      // Enter on an empty line exits the format instead of duplicating it:
+      // a formatted line demotes to a paragraph, an empty paragraph is
+      // removed — so repeated Enter can never stack placeholder lines.
+      if (block.kind !== "p") {
+        api.convert(id, "p", "");
+        focusBlock(id, 0);
+        return;
+      }
+      if (blocks.length > 1) {
+        const next = neighbor(id, 1, visible);
+        const prev = neighbor(id, -1, visible);
+        api.remove(id);
+        if (next) focusBlock(next.id, 0);
+        else if (prev) focusBlock(prev.id, "end");
+      }
+      return;
+    }
     api.setText(id, before);
     api.flushText(id);
     const nextKind: BlockKind = block.kind === "todo" ? "todo" : "p";

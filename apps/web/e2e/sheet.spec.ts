@@ -64,6 +64,34 @@ test("write lines, cross off, edit, and delete on the sheet; ink survives a relo
   await expect(page.getByText("Buy milk")).toBeVisible();
 });
 
+test("Enter on an empty line exits the format instead of stacking placeholders", async ({
+  page,
+}) => {
+  await registerAndOpenSheet(page, "empty-enter");
+
+  await page.getByRole("button", { name: /start typing, or press \//i }).click();
+  await page.keyboard.type("Buy milk");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("[data-kind]")).toHaveCount(2);
+
+  // Enter on the new empty todo demotes it to a paragraph…
+  await page.keyboard.press("Enter");
+  await expect(page.locator('[data-kind="p"]')).toHaveCount(1);
+  await expect(page.locator("[data-kind]")).toHaveCount(2);
+
+  // …and Enter on the empty paragraph removes it. No placeholder trail.
+  await page.keyboard.press("Enter");
+  await expect(page.locator("[data-kind]")).toHaveCount(1);
+
+  // Focus fell back to the task line; a full Enter-Enter-Enter cycle
+  // (split, demote, remove) always collapses back to one line.
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("[data-kind]")).toHaveCount(1);
+  await expect(page.getByText("Buy milk")).toBeVisible();
+});
+
 test("markdown shortcuts and the slash menu shape the sheet", async ({ page }) => {
   await registerAndOpenSheet(page, "blocks");
 
