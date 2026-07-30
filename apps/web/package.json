@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource/courier-prime": "^5.3.0",
+    "@fontsource/special-elite": "^5.3.0",
     "@todo/api": "workspace:*",
     "@todo/shared": "workspace:*",
     "better-auth": "^1.6.25",

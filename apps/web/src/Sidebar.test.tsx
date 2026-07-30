@@ -16,7 +16,7 @@ describe("Sidebar", () => {
     render(<Sidebar lists={[]} selectedId={null} {...noHandlers} />);
 
     expect(
-      screen.getByText("No lists yet — add your first above."),
+      screen.getByText("No sheets yet — name one above to get started."),
     ).toBeTruthy();
   });
 
@@ -101,7 +101,7 @@ describe("Sidebar", () => {
     expect(screen.getByRole("button", { name: "Groceries" })).toBeTruthy();
   });
 
-  it("deletes a list", () => {
+  it("deletes a list only after the tear-up confirmation", () => {
     const onDelete = vi.fn();
     render(
       <Sidebar
@@ -113,7 +113,27 @@ describe("Sidebar", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Delete Groceries" }));
+    expect(onDelete).not.toHaveBeenCalled();
 
+    fireEvent.click(screen.getByRole("button", { name: "Tear up Groceries" }));
     expect(onDelete).toHaveBeenCalledWith("l1");
+  });
+
+  it("keeps the list when the tear-up is declined", () => {
+    const onDelete = vi.fn();
+    render(
+      <Sidebar
+        lists={[{ id: "l1", name: "Groceries" }]}
+        selectedId={null}
+        {...noHandlers}
+        onDelete={onDelete}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete Groceries" }));
+    fireEvent.click(screen.getByRole("button", { name: "Keep" }));
+
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Groceries" })).toBeTruthy();
   });
 });

@@ -45,39 +45,55 @@ export const ListsResponseSchema = z.object({
 
 export type ListsResponse = z.infer<typeof ListsResponseSchema>;
 
-export const TodoSchema = z.object({
+export const BlockKindSchema = z.enum(["todo", "p", "h1", "h2", "divider"]);
+
+export type BlockKind = z.infer<typeof BlockKindSchema>;
+
+export const BlockSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  text: z.string(),
   completed: z.boolean(),
+  kind: BlockKindSchema,
+  position: z.number(),
 });
 
-export type Todo = z.infer<typeof TodoSchema>;
+export type Block = z.infer<typeof BlockSchema>;
 
-export const TodoTitleSchema = z.object({
-  title: z.string().trim().min(1).max(200),
+export const CreateBlockSchema = z.object({
+  id: z.uuid().optional(),
+  text: z.string().max(2000).default(""),
+  kind: BlockKindSchema.default("todo"),
+  position: z.number().finite().optional(),
 });
 
-export type TodoTitle = z.infer<typeof TodoTitleSchema>;
+export type CreateBlock = z.input<typeof CreateBlockSchema>;
 
-export const UpdateTodoSchema = z
+export const UpdateBlockSchema = z
   .object({
-    title: z.string().trim().min(1).max(200).optional(),
+    text: z.string().max(2000).optional(),
     completed: z.boolean().optional(),
+    kind: BlockKindSchema.optional(),
+    position: z.number().finite().optional(),
   })
-  .refine((value) => value.title !== undefined || value.completed !== undefined, {
-    message: "Nothing to update",
-  });
+  .refine(
+    (value) =>
+      value.text !== undefined ||
+      value.completed !== undefined ||
+      value.kind !== undefined ||
+      value.position !== undefined,
+    { message: "Nothing to update" },
+  );
 
-export type UpdateTodo = z.infer<typeof UpdateTodoSchema>;
+export type UpdateBlock = z.input<typeof UpdateBlockSchema>;
 
-export const TodoResponseSchema = z.object({
-  todo: TodoSchema,
+export const BlockResponseSchema = z.object({
+  block: BlockSchema,
 });
 
-export type TodoResponse = z.infer<typeof TodoResponseSchema>;
+export type BlockResponse = z.infer<typeof BlockResponseSchema>;
 
-export const TodosResponseSchema = z.object({
-  todos: z.array(TodoSchema),
+export const BlocksResponseSchema = z.object({
+  blocks: z.array(BlockSchema),
 });
 
-export type TodosResponse = z.infer<typeof TodosResponseSchema>;
+export type BlocksResponse = z.infer<typeof BlocksResponseSchema>;
