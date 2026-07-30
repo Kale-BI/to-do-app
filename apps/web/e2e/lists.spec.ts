@@ -11,7 +11,7 @@ test("create, rename, and delete a list; changes survive a reload", async ({
   await page.getByRole("button", { name: "Create account" }).click();
 
   await expect(
-    page.getByText("No lists yet — add your first above."),
+    page.getByText("No sheets yet — name one above to get started."),
   ).toBeVisible();
 
   await page.getByLabel("New list name").fill("Groceries");
@@ -28,7 +28,8 @@ test("create, rename, and delete a list; changes survive a reload", async ({
   await expect(page.getByRole("button", { name: "Weekly shop", exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "Delete Weekly shop" }).click();
+  await page.getByRole("button", { name: "Tear up Weekly shop" }).click();
   await expect(
-    page.getByText("No lists yet — add your first above."),
+    page.getByText("No sheets yet — name one above to get started."),
   ).toBeVisible();
 });

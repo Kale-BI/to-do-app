@@ -1,13 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource/special-elite";
+@import "@fontsource/courier-prime";
+@import "@fontsource/courier-prime/700.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sheet: 'Special Elite', 'Courier Prime', 'Courier New', monospace;
+    --font-desk: 'Courier Prime', 'Courier New', monospace;
+    --font-heading: var(--font-sheet);
+    --font-sans: var(--font-desk);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -16,11 +20,6 @@
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -39,92 +38,316 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+    --color-paper: var(--paper);
+    --color-ink: var(--ink);
+    --color-ink-faded: var(--ink-faded);
+    --color-ink-faint: var(--ink-faint);
+    --color-ribbon: var(--ribbon);
+    --color-desk-text: var(--desk-text);
+    --color-desk-text-dim: var(--desk-text-dim);
+    --radius-sm: 1px;
+    --radius-md: 2px;
+    --radius-lg: 2px;
+    --radius-xl: 3px;
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    /* Day desk: olive blotter, warm-white sheet, soft typewriter ink */
+    --desk: oklch(0.48 0.045 125);
+    --desk-deep: oklch(0.4 0.05 125);
+    --desk-text: oklch(0.975 0.008 100);
+    --desk-text-dim: oklch(0.93 0.02 110);
+    --paper: oklch(0.965 0.012 95);
+    --paper-shade: oklch(0.93 0.014 95);
+    --paper-edge: oklch(0.88 0.016 95);
+    --ink: oklch(0.27 0.015 80);
+    --ink-faded: oklch(0.54 0.012 80);
+    --ink-faint: oklch(0.7 0.012 85);
+    --ribbon: oklch(0.5 0.17 27);
+    --ribbon-faded: oklch(0.62 0.13 27);
+    --pencil: oklch(0.48 0.01 80);
+    --highlight: oklch(0.9 0.07 90);
+    --lamp: transparent;
+
+    --background: var(--desk);
+    --foreground: var(--desk-text);
+    --card: var(--paper);
+    --card-foreground: var(--ink);
+    --popover: var(--paper);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--paper);
+    --secondary: var(--paper-shade);
+    --secondary-foreground: var(--ink);
+    --muted: var(--paper-shade);
+    --muted-foreground: var(--ink-faded);
+    --accent: var(--paper-shade);
+    --accent-foreground: var(--ink);
+    --destructive: var(--ribbon);
+    --border: var(--paper-edge);
+    --input: var(--paper-edge);
+    --ring: var(--ink);
+    --sidebar: transparent;
+    --sidebar-foreground: var(--desk-text);
+    --sidebar-primary: var(--paper);
+    --sidebar-primary-foreground: var(--ink);
+    --sidebar-accent: var(--paper-shade);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: transparent;
+    --sidebar-ring: var(--desk-text);
+
+    /* paper grain, shared by every sheet */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
+    --linen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08 0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23l)'/%3E%3C/svg%3E");
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    /* Night desk: dark wood, one lamp pool, the same sheet a shade warmer */
+    --desk: oklch(0.23 0.02 65);
+    --desk-deep: oklch(0.17 0.018 65);
+    --desk-text: oklch(0.87 0.025 85);
+    --desk-text-dim: oklch(0.76 0.025 80);
+    --paper: oklch(0.93 0.022 90);
+    --paper-shade: oklch(0.89 0.024 90);
+    --paper-edge: oklch(0.84 0.026 88);
+    --ink: oklch(0.26 0.018 75);
+    --ink-faded: oklch(0.52 0.015 75);
+    --ink-faint: oklch(0.68 0.015 80);
+    --ribbon: oklch(0.49 0.16 27);
+    --ribbon-faded: oklch(0.6 0.12 27);
+    --pencil: oklch(0.46 0.012 75);
+    --highlight: oklch(0.87 0.08 88);
+    --lamp: oklch(0.84 0.07 85 / 0.3);
+    --sidebar-ring: var(--desk-text);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
-    }
   html {
     @apply font-sans;
     }
+  body {
+    @apply text-foreground;
+    min-height: 100vh;
+    background-color: var(--desk);
+    background-image:
+      radial-gradient(85vmax 60vmax at 50% 8%, var(--lamp), transparent 60%),
+      var(--linen),
+      radial-gradient(140% 120% at 50% 30%, transparent 40%, oklch(0 0 0 / 0.22) 100%);
+    background-attachment: fixed;
+    }
+  ::selection {
+    background: var(--highlight);
+    color: var(--ink);
+    }
+}
+
+@layer components {
+  /* ------ paper ------ */
+  .paper {
+    background-color: var(--paper);
+    background-image: var(--grain);
+    color: var(--ink);
+    border-radius: 1px;
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.2),
+      0 14px 34px -10px oklch(0 0 0 / 0.4);
+  }
+
+  /* the main sheet sits on a slim stack of earlier pages */
+  .sheet-stack {
+    position: relative;
+  }
+  .sheet-stack::before,
+  .sheet-stack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--paper-shade);
+    border-radius: 1px;
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+    z-index: -1;
+  }
+  .sheet-stack::before {
+    transform: rotate(0.5deg) translate(3px, 2px);
+  }
+  .sheet-stack::after {
+    transform: rotate(-0.4deg) translate(-2px, 4px);
+  }
+
+  .sheet-enter {
+    animation: sheet-settle 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes sheet-settle {
+    from {
+      opacity: 0;
+      transform: translateY(10px) rotate(0.3deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+  }
+
+  /* ------ type voices ------ */
+  .typed {
+    font-family: var(--font-sheet);
+  }
+  .desk-label {
+    font-family: var(--font-desk);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ------ controls ------ */
+  .typed-btn {
+    font-family: var(--font-desk);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    padding: 0.375rem 0.875rem;
+    transition: background-color 0.12s ease-out, color 0.12s ease-out;
+  }
+  .typed-btn:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .typed-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .typed-btn:disabled {
+    opacity: 0.55;
+  }
+
+  .typed-input {
+    font-family: var(--font-sheet);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ink-faint);
+    border-radius: 0;
+    padding: 0.25rem 0.125rem;
+    color: var(--ink);
+    caret-color: var(--ink);
+  }
+  .typed-input::placeholder {
+    color: var(--ink-faded);
+  }
+  .typed-input:focus {
+    outline: none;
+    border-bottom: 1px solid var(--ink);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+
+  .focus-pencil:focus-visible {
+    outline: 1.5px dashed var(--pencil);
+    outline-offset: 3px;
+  }
+  .dark .focus-pencil:focus-visible {
+    outline-color: currentColor;
+  }
+
+  /* ------ the sheet's writing surface ------ */
+  .block-line {
+    position: relative;
+    caret-color: var(--ink);
+  }
+  .block-text {
+    outline: none;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    min-height: 1em;
+  }
+  .block-text:empty::before {
+    content: attr(data-placeholder);
+    color: var(--ink-faded);
+    pointer-events: none;
+  }
+
+  /* margin affordances appear like pencil marks when the hand hovers the line */
+  .line-tool {
+    opacity: 0;
+    transition: opacity 0.12s ease-out;
+  }
+  .block-line:hover .line-tool,
+  .block-line:focus-within .line-tool,
+  .line-tool:focus-visible {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .line-tool {
+      opacity: 0.6;
+    }
+  }
+
+  /* the red strike drawn across a finished task */
+  .strike-path {
+    stroke: var(--ribbon);
+    stroke-width: 1.75;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .strike-draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: strike-draw 0.4s cubic-bezier(0.3, 0, 0.2, 1) forwards;
+  }
+  @keyframes strike-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* pencil ellipse circling the active filter */
+  .pencil-ring {
+    stroke: var(--pencil);
+    stroke-width: 1.25;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .dark .pencil-ring {
+    stroke: var(--desk-text);
+  }
+
+  /* slash menu: a scrap of paper */
+  .menu-paper {
+    background-color: var(--paper);
+    background-image: var(--grain);
+    color: var(--ink);
+    border: 1px solid var(--paper-edge);
+    border-radius: 2px;
+    box-shadow:
+      0 2px 4px oklch(0 0 0 / 0.18),
+      0 12px 28px -8px oklch(0 0 0 / 0.4);
+    animation: menu-in 0.12s ease-out;
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter,
+  .menu-paper {
+    animation: none;
+  }
+  .strike-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .typed-btn,
+  .line-tool {
+    transition: none;
+  }
 }

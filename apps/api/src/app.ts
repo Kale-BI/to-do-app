@@ -1,21 +1,21 @@
 import {
+  BlockResponseSchema,
+  BlocksResponseSchema,
+  CreateBlockSchema,
   HealthResponseSchema,
   ListNameSchema,
   ListResponseSchema,
   ListsResponseSchema,
   MeResponseSchema,
-  TodoResponseSchema,
-  TodoTitleSchema,
-  TodosResponseSchema,
-  UpdateTodoSchema,
+  UpdateBlockSchema,
   type SessionUser,
 } from "@todo/shared";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq, max } from "drizzle-orm";
 import { Hono } from "hono";
 import { createMiddleware } from "hono/factory";
 import { createAuth } from "./auth";
 import type { Db } from "./db";
-import { list, todo } from "./db/schema";
+import { block, list } from "./db/schema";
 
 type SessionEnv = { Variables: { user: SessionUser } };
 
@@ -109,89 +109,92 @@ export function createApp(db: Db) {
     return row;
   }
 
-  async function ownedTodo(todoId: string, userId: string) {
+  async function ownedBlock(blockId: string, userId: string) {
     const [row] = await db
-      .select({ id: todo.id })
-      .from(todo)
-      .innerJoin(list, eq(todo.listId, list.id))
-      .where(and(eq(todo.id, todoId), eq(list.userId, userId)));
+      .select({ id: block.id })
+      .from(block)
+      .innerJoin(list, eq(block.listId, list.id))
+      .where(and(eq(block.id, blockId), eq(list.userId, userId)));
     return row;
   }
 
-  app.get("/api/lists/:listId/todos", requireSession, async (c) => {
+  function toBlock(row: typeof block.$inferSelect) {
+    return {
+      id: row.id,
+      text: row.text,
+      completed: row.completed,
+      kind: row.kind,
+      position: row.position,
+    };
+  }
+
+  app.get("/api/lists/:listId/blocks", requireSession, async (c) => {
     if (!(await ownedList(c.req.param("listId"), c.get("user").id))) {
       return c.json({ error: "Not found" }, 404);
     }
     const rows = await db
       .select()
-      .from(todo)
-      .where(eq(todo.listId, c.req.param("listId")))
-      .orderBy(todo.createdAt);
-    return c.json(
-      TodosResponseSchema.parse({
-        todos: rows.map((row) => ({
-          id: row.id,
-          title: row.title,
-          completed: row.completed,
-        })),
-      }),
-    );
+      .from(block)
+      .where(eq(block.listId, c.req.param("listId")))
+      .orderBy(asc(block.position), asc(block.createdAt));
+    return c.json(BlocksResponseSchema.parse({ blocks: rows.map(toBlock) }));
   });
 
-  app.post("/api/lists/:listId/todos", requireSession, async (c) => {
+  app.post("/api/lists/:listId/blocks", requireSession, async (c) => {
     if (!(await ownedList(c.req.param("listId"), c.get("user").id))) {
       return c.json({ error: "Not found" }, 404);
     }
-    const parsed = TodoTitleSchema.safeParse(await c.req.json().catch(() => null));
+    const parsed = CreateBlockSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success) {
-      return c.json({ error: "A todo needs a non-empty title" }, 400);
+      return c.json({ error: "Not a valid block" }, 400);
+    }
+    let position = parsed.data.position;
+    if (position === undefined) {
+      const [tail] = await db
+        .select({ max: max(block.position) })
+        .from(block)
+        .where(eq(block.listId, c.req.param("listId")));
+      position = (tail?.max ?? 0) + 1;
     }
     const now = new Date();
     const row = {
-      id: crypto.randomUUID(),
-      title: parsed.data.title,
+      id: parsed.data.id ?? crypto.randomUUID(),
+      text: parsed.data.text,
       completed: false,
+      kind: parsed.data.kind,
+      position,
       listId: c.req.param("listId"),
       createdAt: now,
       updatedAt: now,
     };
-    await db.insert(todo).values(row);
-    return c.json(
-      TodoResponseSchema.parse({
-        todo: { id: row.id, title: row.title, completed: row.completed },
-      }),
-      201,
-    );
+    await db.insert(block).values(row);
+    return c.json(BlockResponseSchema.parse({ block: toBlock(row) }), 201);
   });
 
-  app.patch("/api/todos/:id", requireSession, async (c) => {
-    if (!(await ownedTodo(c.req.param("id"), c.get("user").id))) {
+  app.patch("/api/blocks/:id", requireSession, async (c) => {
+    if (!(await ownedBlock(c.req.param("id"), c.get("user").id))) {
       return c.json({ error: "Not found" }, 404);
     }
-    const parsed = UpdateTodoSchema.safeParse(await c.req.json().catch(() => null));
+    const parsed = UpdateBlockSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success) {
       return c.json({ error: "Nothing valid to update" }, 400);
     }
     const [row] = await db
-      .update(todo)
+      .update(block)
       .set({ ...parsed.data, updatedAt: new Date() })
-      .where(eq(todo.id, c.req.param("id")))
+      .where(eq(block.id, c.req.param("id")))
       .returning();
     if (!row) {
       return c.json({ error: "Not found" }, 404);
     }
-    return c.json(
-      TodoResponseSchema.parse({
-        todo: { id: row.id, title: row.title, completed: row.completed },
-      }),
-    );
+    return c.json(BlockResponseSchema.parse({ block: toBlock(row) }));
   });
 
-  app.delete("/api/todos/:id", requireSession, async (c) => {
-    if (!(await ownedTodo(c.req.param("id"), c.get("user").id))) {
+  app.delete("/api/blocks/:id", requireSession, async (c) => {
+    if (!(await ownedBlock(c.req.param("id"), c.get("user").id))) {
       return c.json({ error: "Not found" }, 404);
     }
-    await db.delete(todo).where(eq(todo.id, c.req.param("id")));
+    await db.delete(block).where(eq(block.id, c.req.param("id")));
     return c.body(null, 204);
   });
 

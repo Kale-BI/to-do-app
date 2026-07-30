@@ -1,4 +1,4 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, doublePrecision, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 const timestamps = {
   createdAt: timestamp("created_at", { mode: "date" }).notNull(),
@@ -52,10 +52,12 @@ export const list = pgTable("list", {
   ...timestamps,
 });
 
-export const todo = pgTable("todo", {
+export const block = pgTable("block", {
   id: text("id").primaryKey(),
-  title: text("title").notNull(),
+  text: text("text").notNull(),
   completed: boolean("completed").notNull().default(false),
+  kind: text("kind").notNull().default("todo"),
+  position: doublePrecision("position").notNull().default(0),
   listId: text("list_id")
     .notNull()
     .references(() => list.id, { onDelete: "cascade" }),
