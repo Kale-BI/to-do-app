@@ -223,6 +223,11 @@ The whole document surface. Editable typed title (uppercase input, commits on bl
 ### The Strike (signature: `StrikeOverlay` in `BlockLine.tsx`)
 Completion, and the reason there are no checkboxes. A single-line task gets an absolutely positioned SVG path in `--ribbon` (`.strike-path`: stroke-width 1.75, round caps, wavering cubic curve) sized to the text width, drawn with `strike-draw` on toggle; wrapped tasks fall back to a per-visual-line repeating-gradient rule in `--ribbon` at 0.8 opacity. Struck text fades to `--ink-faded` but stays legible. Toggling back removes the strike without animation.
 
+### The Due Date (signature: `DueMargin` in `BlockLine.tsx`, `.due-mark` / `.due-slot`)
+A date penciled into the line's right margin — a fixed `4.75rem` column between the words and the tear-up mark, so the strike stops before it. The date is a desk-label annotation at 0.625rem (`29 AUG`, gaining a two-digit year only when it is another year), sitting on the line's baseline: `--ink-faded` at rest, full `--ink` once it is late, `--ink-faint` once the task is crossed off — a finished task's date recedes and stops reading as late. No pill, no badge, no ribbon red; only task lines wear one.
+
+Dates are typed as part of writing the line — `buy milk @friday` — from a fixed vocabulary (`today`, `tomorrow`, weekday names and their three-letter forms, ISO days), resolved in the browser and consumed out of the text once a space or the line's commit finishes the token. For anyone who does not know the token, the margin is also the affordance: a `.line-tool` "Date" mark appears on hover with an invisible native picker over it, and a hidden-at-rest cross beside a set date clears it. Clearing lives only there — there is no clearing token.
+
 ### Slash Menu (`SlashMenu.tsx`, `.menu-paper`)
 A scrap of grained paper (`w-56`, 2px radius, `menu-in` animation) opened by typing `/` in a line, positioned by the caret's line (flips above when near the viewport bottom). Exactly five core blocks: To-do, Heading 1, Heading 2, Paragraph, Divider — each row a pencil icon + typed label + desk-label markdown hint (`[]`, `#`, `##`, `---`). Filterable by typing; arrow keys/Enter/Escape drive it from the line; active row gets an `ink/8` wash. No other blocks exist in v1.
 

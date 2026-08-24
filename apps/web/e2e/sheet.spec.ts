@@ -92,6 +92,66 @@ test("Enter on an empty line exits the format instead of stacking placeholders",
   await expect(page.getByText("Buy milk")).toBeVisible();
 });
 
+// The margin annotation, read off the browser's own clock the same way the
+// client resolves the token.
+function pencilled(day: Date): string {
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return `${day.getDate()} ${months[day.getMonth()]}`;
+}
+
+test("a date typed onto a line is pencilled into the margin, and cleared from it", async ({
+  page,
+}) => {
+  await registerAndOpenSheet(page, "due");
+
+  const today = new Date();
+  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+  // Typing the token dates the line: the token is consumed out of the text
+  // and the day appears in the margin.
+  const dueSet = patchSettled(page, '"dueOn"');
+  await page.getByRole("button", { name: /start typing, or press \//i }).click();
+  await page.keyboard.type("Buy milk @tomorrow ");
+  await expect(page.getByText("Buy milk", { exact: true })).toBeVisible();
+  await expect(page.getByText(pencilled(tomorrow))).toBeVisible();
+  await dueSet;
+
+  // Text that is not a token is left alone as content.
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Email bob@example.com ");
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("Email bob@example.com")).toBeVisible();
+  await expect(page.locator("[data-due]")).toHaveCount(1);
+
+  // The margin affordance dates a line for anyone who does not know the token.
+  const secondSet = patchSettled(page, '"dueOn"');
+  await page.getByLabel("Set date for Email bob@example.com").fill("2020-01-15");
+  await secondSet;
+  await expect(page.getByText("15 JAN 20")).toBeVisible();
+  await expect(page.locator("[data-overdue]")).toHaveCount(1);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Groceries", exact: true }).click();
+  await expect(page.getByText(pencilled(tomorrow))).toBeVisible();
+
+  // Crossing the line off does not score out its date: the strike stops at
+  // the margin and the date reads more faintly.
+  const struck = patchSettled(page, '"completed":true');
+  await page.getByText("Buy milk", { exact: true }).hover();
+  await page.getByRole("button", { name: "Cross off Buy milk" }).click();
+  await struck;
+  await expect(page.locator('[data-completed][data-due]')).toHaveCount(1);
+  await expect(page.getByText(pencilled(tomorrow))).toBeVisible();
+
+  // Clearing is available only in the margin — there is no clearing token.
+  const cleared = patchSettled(page, '"dueOn":null');
+  await page.getByText("Buy milk", { exact: true }).hover();
+  await page.getByRole("button", { name: "Clear date for Buy milk" }).click();
+  await cleared;
+  await expect(page.getByText(pencilled(tomorrow))).not.toBeVisible();
+  await expect(page.getByText("Buy milk", { exact: true })).toBeVisible();
+});
+
 test("markdown shortcuts and the slash menu shape the sheet", async ({ page }) => {
   await registerAndOpenSheet(page, "blocks");
 

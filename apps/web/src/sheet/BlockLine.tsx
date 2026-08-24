@@ -13,6 +13,7 @@ import {
   selectionCollapsed,
 } from "./caret";
 import { CrossIcon, StrikeIcon, UnstrikeIcon } from "./icons";
+import { consumeDueToken, formatDue, isOverdue } from "./due";
 
 export type BlockLineHandle = {
   focus: (offset: number | "end") => void;
@@ -74,6 +75,7 @@ export function BlockLine({
   onDeleteForward,
   onNavigate,
   onToggle,
+  onDue,
   onDelete,
   onSlashOpen,
   onMenuKey,
@@ -91,6 +93,7 @@ export function BlockLine({
   onDeleteForward: (id: string, text: string) => void;
   onNavigate: (id: string, dir: -1 | 1) => void;
   onToggle: (id: string, completed: boolean) => void;
+  onDue: (id: string, dueOn: string | null) => void;
   onDelete: (id: string) => void;
   onSlashOpen: (id: string, slashOffset: number) => void;
   onMenuKey: (key: MenuKey) => void;
@@ -150,6 +153,21 @@ export function BlockLine({
 
   const kind = block.kind;
 
+  // Only a task line takes a date, so a token typed into a note or a heading
+  // stays what it plainly is: text. Nothing is consumed where the date would
+  // have nowhere to show.
+  function takeDueToken(commit: boolean): boolean {
+    const el = textRef.current;
+    if (!el || kind !== "todo") return false;
+    const consumed = consumeDueToken(el.textContent ?? "", { commit });
+    if (!consumed) return false;
+    el.textContent = consumed.text;
+    if (document.activeElement === el) placeCaret(el, consumed.caret);
+    onInput(block.id, consumed.text);
+    onDue(block.id, consumed.dueOn);
+    return true;
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const el = textRef.current;
     if (!el) return;
@@ -169,6 +187,7 @@ export function BlockLine({
         if (kind === "todo") onToggle(block.id, !block.completed);
         return;
       }
+      takeDueToken(true);
       const text = el.textContent ?? "";
       const offset = caretOffset(el) ?? text.length;
       const before = text.slice(0, offset);
@@ -241,6 +260,7 @@ export function BlockLine({
         onTransform(block.id, transform.kind, transform.text);
         return;
       }
+      if (takeDueToken(false)) return;
     }
     onInput(block.id, text);
   }
@@ -248,12 +268,18 @@ export function BlockLine({
   const isTodo = kind === "todo";
   const done = isTodo && block.completed;
   const label = block.text.trim() || "empty line";
+  // A date lives on the record whatever the line has become, but only a task
+  // line wears one.
+  const dueOn = isTodo ? (block.dueOn ?? null) : null;
+  const overdue = dueOn !== null && !done && isOverdue(dueOn);
 
   return (
     <div
-      className={`block-line group grid grid-cols-[2rem_1fr_2rem] items-start ${KIND_GAP_CLASS[kind]} -mx-8`}
+      className={`block-line group grid grid-cols-[2rem_1fr_4.75rem_2rem] items-start ${KIND_GAP_CLASS[kind]} -mx-8`}
       data-kind={kind}
       data-completed={done || undefined}
+      data-due={dueOn ?? undefined}
+      data-overdue={overdue || undefined}
     >
       <span className="flex justify-center pt-[0.45em]">
         {isTodo ? (
@@ -287,10 +313,22 @@ export function BlockLine({
           }`}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
-          onBlur={() => onBlur(block.id)}
+          onBlur={() => {
+            takeDueToken(true);
+            onBlur(block.id);
+          }}
         />
         {done ? <StrikeOverlay textEl={textRef} animate={strikeAnimated} /> : null}
       </div>
+      <DueMargin
+        block={block}
+        isTodo={isTodo}
+        dueOn={dueOn}
+        overdue={overdue}
+        done={done}
+        label={label}
+        onDue={onDue}
+      />
       <span className="flex justify-center pt-[0.45em]">
         <button
           type="button"
@@ -303,6 +341,68 @@ export function BlockLine({
         </button>
       </span>
     </div>
+  );
+}
+
+// The date pencilled into the line's right margin, and the affordance that
+// sets or clears it for anyone who does not know the token. The strike is
+// drawn over the words only, so crossing a task off never scores out its date.
+function DueMargin({
+  block,
+  isTodo,
+  dueOn,
+  overdue,
+  done,
+  label,
+  onDue,
+}: {
+  block: Block;
+  isTodo: boolean;
+  dueOn: string | null;
+  overdue: boolean;
+  done: boolean;
+  label: string;
+  onDue: (id: string, dueOn: string | null) => void;
+}) {
+  if (!isTodo) return <span />;
+
+  // Faded by default, full ink once it is late, faint once the task is done —
+  // a finished task's date recedes and stops reading as late.
+  const ink = done ? "text-ink-faint" : overdue ? "text-ink" : "text-ink-faded";
+
+  return (
+    // pt sits the annotation's baseline on the line's own — measured, not guessed.
+    <span className="flex items-start justify-end gap-1 pt-[0.625rem]">
+      {dueOn ? (
+        <button
+          type="button"
+          aria-label={`Clear date for ${label}`}
+          onClick={() => onDue(block.id, null)}
+          className="line-tool focus-pencil mt-[0.05rem] h-3.5 w-3.5 shrink-0 text-ink-faded hover:text-ribbon"
+          title="Clear date"
+        >
+          <CrossIcon className="h-full w-full" />
+        </button>
+      ) : null}
+      <span className="due-slot">
+        {dueOn ? (
+          <span className={`due-mark desk-label ${ink}`}>{formatDue(dueOn)}</span>
+        ) : (
+          <span className="due-mark desk-label line-tool text-ink-faded" aria-hidden="true">
+            Date
+          </span>
+        )}
+        <input
+          type="date"
+          className="due-input"
+          value={dueOn ?? ""}
+          aria-label={dueOn ? `Change date for ${label}` : `Set date for ${label}`}
+          title={dueOn ? "Change date" : "Set a date"}
+          onClick={(event) => event.currentTarget.showPicker?.()}
+          onChange={(event) => onDue(block.id, event.target.value || null)}
+        />
+      </span>
+    </span>
   );
 }
 
@@ -408,7 +508,7 @@ function DividerLine({
 
   return (
     <div
-      className={`block-line group grid grid-cols-[2rem_1fr_2rem] items-center ${KIND_GAP_CLASS.divider} -mx-8`}
+      className={`block-line group grid grid-cols-[2rem_1fr_4.75rem_2rem] items-center ${KIND_GAP_CLASS.divider} -mx-8`}
       data-kind="divider"
     >
       <span />
@@ -449,6 +549,7 @@ function DividerLine({
           />
         </svg>
       </button>
+      <span />
       <span className="flex justify-center">
         <button
           type="button"

@@ -26,10 +26,10 @@ Daily-driver utility, used in short frequent sessions on a laptop, sometimes at 
 
 - Auth: sign-up, sign-in, session gate, sign-out.
 - Lists: create, rename, delete; owned by the signed-in user.
-- Sheet content: blocks of kind todo / paragraph / heading 1 / heading 2 / divider, ordered within a list; todos toggle done.
+- Sheet content: blocks of kind todo / paragraph / heading 1 / heading 2 / divider, ordered within a list; todos toggle done and may carry a due date.
 - Editing: markdown-first line conversions (`# `, `## `, `---`, `[] `) and a `/` block menu (core set only in v1: to-do, heading 1, heading 2, paragraph, divider). Inline rich text (bold/italic) is explicitly out of scope for v1.
 - No checkboxes anywhere: completion is a strike-through drawn over the line (confirmed 2026-07-30).
-- No collaboration, sharing, reminders, or due dates.
+- No collaboration, sharing, or reminders. A todo can carry a due date, but it is a written note on the line and nothing more: reminders stay deliberately excluded — nothing notifies, nothing reorders, nothing leaves the sheet.
 - Tests are part of done: vitest unit tests (API + web) and a Playwright full-journey smoke.
 
 ## Brand Commitments

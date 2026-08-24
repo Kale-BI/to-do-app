@@ -23,12 +23,20 @@ test("full journey: register → sheet → type blocks → cross off → filter 
   await page.keyboard.press("Enter");
   await page.keyboard.type("[] Buy milk");
   await page.keyboard.press("Enter");
-  await page.keyboard.type("Buy bread");
+  await page.keyboard.type("Buy bread @tomorrow ");
   await expect(
     page.locator('[data-kind="h1"]', { hasText: "This weekend" }),
   ).toBeVisible();
   await expect(page.getByText("Buy milk")).toBeVisible();
-  await expect(page.getByText("Buy bread")).toBeVisible();
+
+  // The token is consumed out of the line and pencilled into its margin.
+  const today = new Date();
+  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  await expect(page.getByText("Buy bread", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(`${tomorrow.getDate()} ${months[tomorrow.getMonth()]}`),
+  ).toBeVisible();
 
   // Cross one off — a line is drawn over it, no checkbox anywhere.
   await page.getByText("Buy milk").hover();

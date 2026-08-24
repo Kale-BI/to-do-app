@@ -409,6 +409,7 @@ export function Sheet({
               onDeleteForward={handleDeleteForward}
               onNavigate={handleNavigate}
               onToggle={api.toggle}
+              onDue={api.setDue}
               onDelete={handleDelete}
               onSlashOpen={handleSlashOpen}
               onMenuKey={handleMenuKey}

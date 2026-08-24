@@ -284,6 +284,47 @@
     }
   }
 
+  /* the date pencilled into a line's right margin. The native picker sits
+     invisible over the mark, so the only thing on the page is the annotation
+     in the desk voice; it takes clicks only once the hand is on the line. */
+  .due-slot {
+    position: relative;
+    display: inline-flex;
+    justify-content: flex-end;
+  }
+  .due-mark {
+    font-size: 0.625rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .due-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: none;
+  }
+  .block-line:hover .due-input,
+  .block-line:focus-within .due-input {
+    pointer-events: auto;
+  }
+  @media (hover: none) {
+    .due-input {
+      pointer-events: auto;
+    }
+  }
+  .due-slot:has(.due-input:focus-visible) {
+    outline: 1.5px dashed var(--pencil);
+    outline-offset: 3px;
+  }
+  .dark .due-slot:has(.due-input:focus-visible) {
+    outline-color: var(--ink);
+  }
+
   /* the red strike drawn across a finished task */
   .strike-path {
     stroke: var(--ribbon);

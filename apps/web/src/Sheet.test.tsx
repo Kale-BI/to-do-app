@@ -43,6 +43,7 @@ function fakeApi(): BlocksApi {
     flushText: vi.fn(),
     convert: vi.fn(),
     toggle: vi.fn(),
+    setDue: vi.fn(),
     remove: vi.fn(),
   };
 }
@@ -252,6 +253,110 @@ describe("Sheet", () => {
     fireEvent.blur(title);
 
     expect(onRename).toHaveBeenCalledWith("Weekly shop");
+  });
+
+  it("pencils a date into the margin of a task line, and nowhere else", () => {
+    vi.setSystemTime(new Date(2026, 7, 24));
+    const dated: Block[] = [
+      {
+        id: "d1",
+        text: "Buy milk",
+        completed: false,
+        kind: "todo",
+        position: 1,
+        dueOn: "2026-08-29",
+      },
+      {
+        id: "d2",
+        text: "Notes for the trip",
+        completed: false,
+        kind: "p",
+        position: 2,
+        dueOn: "2026-08-29",
+      },
+    ];
+    const { container } = renderSheet({ blocks: dated });
+
+    expect(screen.getByText("29 AUG")).toBeTruthy();
+    expect(container.querySelectorAll("[data-due]")).toHaveLength(1);
+    expect(
+      container.querySelector('[data-kind="p"]')?.getAttribute("data-due"),
+    ).toBeNull();
+    vi.useRealTimers();
+  });
+
+  it("darkens an overdue date and lets a crossed-off one recede", () => {
+    vi.setSystemTime(new Date(2026, 7, 24));
+    const dated: Block[] = [
+      { id: "o1", text: "Late", completed: false, kind: "todo", position: 1, dueOn: "2026-08-23" },
+      { id: "o2", text: "Today", completed: false, kind: "todo", position: 2, dueOn: "2026-08-24" },
+      { id: "o3", text: "Done", completed: true, kind: "todo", position: 3, dueOn: "2026-08-23" },
+    ];
+    const { container } = renderSheet({ blocks: dated });
+
+    const overdue = container.querySelectorAll("[data-overdue]");
+    expect(overdue).toHaveLength(1);
+    expect(overdue[0]?.getAttribute("data-due")).toBe("2026-08-23");
+    // `text-ink-faded` contains `text-ink`, so compare whole class names.
+    const inkOf = (el?: Element) => el?.className.split(" ").at(-1);
+    const late = screen.getAllByText("23 AUG");
+    expect(inkOf(late[0])).toBe("text-ink");
+    expect(inkOf(screen.getByText("24 AUG"))).toBe("text-ink-faded");
+
+    // The finished task keeps its date, in the faintest ink, and stops
+    // reading as late.
+    const finished = container.querySelector('[data-completed]');
+    expect(finished?.getAttribute("data-overdue")).toBeNull();
+    expect(inkOf(late[1])).toBe("text-ink-faint");
+    vi.useRealTimers();
+  });
+
+  it("resolves a typed token once a space finishes it, and not before", () => {
+    vi.setSystemTime(new Date(2026, 7, 24));
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "todo");
+    el.textContent = "Buy milk @frid";
+    fireEvent.input(el);
+    expect(api.setDue).not.toHaveBeenCalled();
+    expect(api.setText).toHaveBeenLastCalledWith("b1", "Buy milk @frid");
+
+    el.textContent = "Buy milk @friday ";
+    fireEvent.input(el);
+    expect(api.setDue).toHaveBeenCalledWith("b1", "2026-08-28");
+    expect(api.setText).toHaveBeenLastCalledWith("b1", "Buy milk");
+    expect(el.textContent).toBe("Buy milk");
+    vi.useRealTimers();
+  });
+
+  it("leaves a token typed into a note as plain text", () => {
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "p");
+    el.textContent = "Notes @friday ";
+    fireEvent.input(el);
+
+    expect(api.setDue).not.toHaveBeenCalled();
+    expect(api.setText).toHaveBeenCalledWith("b3", "Notes @friday ");
+  });
+
+  it("sets and clears a date from the margin", () => {
+    vi.setSystemTime(new Date(2026, 7, 24));
+    const dated: Block[] = [
+      { id: "m1", text: "Buy milk", completed: false, kind: "todo", position: 1 },
+      { id: "m2", text: "Buy bread", completed: false, kind: "todo", position: 2, dueOn: "2026-08-29" },
+    ];
+    const { api } = renderSheet({ blocks: dated });
+
+    fireEvent.change(screen.getByLabelText("Set date for Buy milk"), {
+      target: { value: "2026-09-01" },
+    });
+    expect(api.setDue).toHaveBeenCalledWith("m1", "2026-09-01");
+
+    // Clearing lives only in the margin — there is no clearing token.
+    fireEvent.click(screen.getByRole("button", { name: "Clear date for Buy bread" }));
+    expect(api.setDue).toHaveBeenCalledWith("m2", null);
+    vi.useRealTimers();
   });
 
   it("converts a non-paragraph line to a paragraph on Backspace at start", () => {

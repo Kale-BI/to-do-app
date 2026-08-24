@@ -105,6 +105,7 @@ export function useBlocks(listId: string) {
       completed: false,
       kind,
       position: place(afterId),
+      dueOn: null,
     };
     commit(sorted([...(blocksRef.current ?? []), block]));
     enqueue(block.id, () =>
@@ -133,6 +134,7 @@ export function useBlocks(listId: string) {
       completed: false,
       kind,
       position,
+      dueOn: null,
     };
     commit(sorted([...current, block]));
     enqueue(block.id, () =>
@@ -155,6 +157,13 @@ export function useBlocks(listId: string) {
     enqueue(id, () => api.updateBlock(id, { completed }));
   }
 
+  // A day sets the date, null clears it. Never debounced: a date is a
+  // deliberate mark, not a stream of keystrokes.
+  function setDue(id: string, dueOn: string | null) {
+    patchLocal(id, { dueOn });
+    enqueue(id, () => api.updateBlock(id, { dueOn }));
+  }
+
   function remove(id: string) {
     const timer = timers.current.get(id);
     if (timer) clearTimeout(timer);
@@ -172,6 +181,7 @@ export function useBlocks(listId: string) {
     flushText,
     convert,
     toggle,
+    setDue,
     remove,
   };
 }
