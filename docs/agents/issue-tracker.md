@@ -1,13 +1,13 @@
 # Issue tracker: Linear
 
-Issues and PRDs for this repo live in Linear, in the **To-do App** project on the **Ops** team (issue keys `VETTA-<n>`). Use the `linear-server` MCP tools for all operations.
+Issues and PRDs for this repo live in Linear, in the **To-do App** project on the **Eng** team (issue keys `VETTA-<n>`). Use the `linear-server` MCP tools for all operations.
 
 - Project: `To-do App` (https://linear.app/vetta/project/to-do-app-fb8a539c66e3)
-- Team: `Ops`
+- Team: `Eng`
 
 ## Conventions
 
-- **Create an issue**: `save_issue` with `title`, `team: "Ops"`, `project: "To-do App"`, and a Markdown `description`. Do not pass `id` when creating.
+- **Create an issue**: `save_issue` with `title`, `team: "Eng"`, `project: "To-do App"`, and a Markdown `description`. Do not pass `id` when creating.
 - **Read an issue**: `get_issue` with the identifier (e.g. `VETTA-42`); pass `includeRelations: true` when blocking/related links matter. Fetch discussion with `list_comments`.
 - **List issues**: `list_issues` with `project: "To-do App"`, plus `state`, `label`, or `assignee` filters as needed. Use `fields` to keep responses lean (e.g. `["title", "status", "labels", "assignee", "parentId"]`).
 - **Comment on an issue**: `save_comment` with `issueId` and a Markdown `body`.
