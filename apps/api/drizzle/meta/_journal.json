@@ -15,6 +15,13 @@
       "when": 1785433070008,
       "tag": "0001_blocks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787585159454,
+      "tag": "0002_block_due_on",
+      "breakpoints": true
     }
   ]
 }

@@ -49,12 +49,17 @@ export const BlockKindSchema = z.enum(["todo", "p", "h1", "h2", "divider"]);
 
 export type BlockKind = z.infer<typeof BlockKindSchema>;
 
+// A due date is a plain calendar day: no time, no timezone. Every block kind
+// tolerates one; only todos ever draw it.
+export const DueOnSchema = z.iso.date();
+
 export const BlockSchema = z.object({
   id: z.string(),
   text: z.string(),
   completed: z.boolean(),
   kind: BlockKindSchema,
   position: z.number(),
+  dueOn: DueOnSchema.nullable().optional(),
 });
 
 export type Block = z.infer<typeof BlockSchema>;
@@ -64,9 +69,12 @@ export const CreateBlockSchema = z.object({
   text: z.string().max(2000).default(""),
   kind: BlockKindSchema.default("todo"),
   position: z.number().finite().optional(),
+  dueOn: DueOnSchema.nullable().optional(),
 });
 
 export type CreateBlock = z.input<typeof CreateBlockSchema>;
+
+const UPDATABLE_BLOCK_FIELDS = ["text", "completed", "kind", "position", "dueOn"] as const;
 
 export const UpdateBlockSchema = z
   .object({
@@ -74,15 +82,14 @@ export const UpdateBlockSchema = z
     completed: z.boolean().optional(),
     kind: BlockKindSchema.optional(),
     position: z.number().finite().optional(),
+    // An explicit null clears the date; an absent key leaves it alone.
+    dueOn: DueOnSchema.nullable().optional(),
   })
-  .refine(
-    (value) =>
-      value.text !== undefined ||
-      value.completed !== undefined ||
-      value.kind !== undefined ||
-      value.position !== undefined,
-    { message: "Nothing to update" },
-  );
+  // Key presence, not a comparison against undefined: `{ dueOn: null }` is a
+  // real edit — it means "take the date off" — and must not read as empty.
+  .refine((value) => UPDATABLE_BLOCK_FIELDS.some((field) => field in value), {
+    message: "Nothing to update",
+  });
 
 export type UpdateBlock = z.input<typeof UpdateBlockSchema>;
 

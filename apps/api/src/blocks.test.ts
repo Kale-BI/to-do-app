@@ -1,5 +1,5 @@
 import { BlockResponseSchema, BlocksResponseSchema } from "@todo/shared";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "./app";
 import { createPgliteDb } from "./db/pglite";
 
@@ -53,6 +53,17 @@ async function getBlocks(app: App, cookie: string, listId: string) {
   });
   expect(res.status).toBe(200);
   return BlocksResponseSchema.parse(await res.json()).blocks;
+}
+
+async function patchBlock(
+  app: App,
+  cookie: string,
+  id: string,
+  patch: Record<string, unknown>,
+) {
+  const res = await app.request(`/api/blocks/${id}`, jsonInit("PATCH", patch, cookie));
+  expect(res.status).toBe(200);
+  return BlockResponseSchema.parse(await res.json()).block;
 }
 
 describe("blocks", () => {
@@ -219,5 +230,132 @@ describe("blocks", () => {
     expect((await app.request(`/api/lists/${listId}/blocks`, { headers: { cookie } })).status).toBe(
       404,
     );
+  });
+});
+
+// One sheet, shared across these reads: each test writes its own line, and a
+// fresh PGlite boot and password hash per test costs more than it proves.
+describe("block due dates", () => {
+  let app: App;
+  let cookie: string;
+  let listId: string;
+
+  beforeAll(async () => {
+    app = createApp(await createPgliteDb());
+    cookie = await registerUser(app, "dates@example.com");
+    listId = (await createList(app, cookie, "Deadlines")).id;
+  });
+
+  async function readBack(id: string) {
+    const blocks = await getBlocks(app, cookie, listId);
+    const found = blocks.find((candidate) => candidate.id === id);
+    if (!found) throw new Error(`expected block ${id} to still be on the sheet`);
+    return found;
+  }
+
+  it("reads a line written without a date as having none", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Buy milk" });
+
+    expect(created.dueOn).toBeNull();
+    expect((await readBack(created.id)).dueOn).toBeNull();
+  });
+
+  it("keeps a date given at create, on every later read", async () => {
+    const created = await addBlock(app, cookie, listId, {
+      text: "Buy milk",
+      dueOn: "2026-09-01",
+    });
+
+    expect(created.dueOn).toBe("2026-09-01");
+    expect((await readBack(created.id)).dueOn).toBe("2026-09-01");
+  });
+
+  it("sets a date on an undated line, then changes it", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Buy milk" });
+
+    await patchBlock(app, cookie, created.id, { dueOn: "2026-09-01" });
+    expect((await readBack(created.id)).dueOn).toBe("2026-09-01");
+
+    await patchBlock(app, cookie, created.id, { dueOn: "2026-09-08" });
+    expect((await readBack(created.id)).dueOn).toBe("2026-09-08");
+  });
+
+  it("clears a date when the patch says so with an explicit null", async () => {
+    const created = await addBlock(app, cookie, listId, {
+      text: "Buy milk",
+      dueOn: "2026-09-01",
+    });
+
+    const cleared = await patchBlock(app, cookie, created.id, { dueOn: null });
+
+    expect(cleared.dueOn).toBeNull();
+    expect((await readBack(created.id)).dueOn).toBeNull();
+  });
+
+  it("leaves a date alone when the patch never mentions it", async () => {
+    const created = await addBlock(app, cookie, listId, {
+      text: "Buy milk",
+      dueOn: "2026-09-01",
+    });
+
+    await patchBlock(app, cookie, created.id, { text: "Buy oat milk" });
+    await patchBlock(app, cookie, created.id, { completed: true });
+
+    const after = await readBack(created.id);
+    expect(after.text).toBe("Buy oat milk");
+    expect(after.completed).toBe(true);
+    expect(after.dueOn).toBe("2026-09-01");
+  });
+
+  // Retain on conversion: reformatting a line is a fluid editing gesture, and
+  // a kind change must never carry a date clear along with it.
+  it("retains a due date when a dated todo is converted to another kind", async () => {
+    const created = await addBlock(app, cookie, listId, {
+      text: "Buy milk",
+      dueOn: "2026-09-01",
+    });
+
+    const heading = await patchBlock(app, cookie, created.id, { kind: "h2" });
+    expect(heading.kind).toBe("h2");
+    expect((await readBack(created.id)).dueOn).toBe("2026-09-01");
+
+    const back = await patchBlock(app, cookie, created.id, { kind: "todo" });
+    expect(back.kind).toBe("todo");
+    expect((await readBack(created.id)).dueOn).toBe("2026-09-01");
+  });
+
+  it("accepts a patch whose only content is a cleared date", async () => {
+    const created = await addBlock(app, cookie, listId, {
+      text: "Buy milk",
+      dueOn: "2026-09-01",
+    });
+
+    const res = await app.request(
+      `/api/blocks/${created.id}`,
+      jsonInit("PATCH", { dueOn: null }, cookie),
+    );
+
+    expect(res.status).toBe(200);
+  });
+
+  it("rejects a malformed date on create and on update", async () => {
+    expect(
+      (
+        await app.request(
+          `/api/lists/${listId}/blocks`,
+          jsonInit("POST", { text: "Buy milk", dueOn: "friday" }, cookie),
+        )
+      ).status,
+    ).toBe(400);
+
+    const created = await addBlock(app, cookie, listId, { text: "Buy milk" });
+    expect(
+      (
+        await app.request(
+          `/api/blocks/${created.id}`,
+          jsonInit("PATCH", { dueOn: "2026-13-01" }, cookie),
+        )
+      ).status,
+    ).toBe(400);
   });
 });

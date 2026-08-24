@@ -29,7 +29,7 @@ Daily-driver utility, used in short frequent sessions on a laptop, sometimes at 
 - Sheet content: blocks of kind todo / paragraph / heading 1 / heading 2 / divider, ordered within a list; todos toggle done.
 - Editing: markdown-first line conversions (`# `, `## `, `---`, `[] `) and a `/` block menu (core set only in v1: to-do, heading 1, heading 2, paragraph, divider). Inline rich text (bold/italic) is explicitly out of scope for v1.
 - No checkboxes anywhere: completion is a strike-through drawn over the line (confirmed 2026-07-30).
-- No collaboration, sharing, reminders, or due dates.
+- No collaboration, sharing, or reminders.
 - Tests are part of done: vitest unit tests (API + web) and a Playwright full-journey smoke.
 
 ## Brand Commitments

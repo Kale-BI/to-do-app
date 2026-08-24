@@ -1,0 +1,1 @@
+ALTER TABLE "block" ADD COLUMN "due_on" date;

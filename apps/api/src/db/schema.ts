@@ -1,4 +1,4 @@
-import { boolean, doublePrecision, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, date, doublePrecision, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 const timestamps = {
   createdAt: timestamp("created_at", { mode: "date" }).notNull(),
@@ -58,6 +58,9 @@ export const block = pgTable("block", {
   completed: boolean("completed").notNull().default(false),
   kind: text("kind").notNull().default("todo"),
   position: doublePrecision("position").notNull().default(0),
+  // A plain calendar day, no time and no timezone. Nullable and deliberately
+  // unconstrained by kind: "only todos show a date" is a render rule.
+  dueOn: date("due_on"),
   listId: text("list_id")
     .notNull()
     .references(() => list.id, { onDelete: "cascade" }),
