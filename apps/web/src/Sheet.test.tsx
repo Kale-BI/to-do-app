@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Block } from "@todo/shared";
 import { Sheet } from "./sheet/Sheet";
 import type { BlocksApi } from "./useBlocks";
@@ -43,6 +43,7 @@ function fakeApi(): BlocksApi {
     flushText: vi.fn(),
     convert: vi.fn(),
     toggle: vi.fn(),
+    setDue: vi.fn(),
     remove: vi.fn(),
   };
 }
@@ -269,5 +270,253 @@ describe("Sheet", () => {
     fireEvent.keyDown(el, { key: "Backspace" });
 
     expect(api.convert).toHaveBeenCalledWith("b4", "p", "Later");
+  });
+});
+
+// A Wednesday, so a weekday token has somewhere to point and "25 Aug" is
+// yesterday. The sheet reads the browser's own clock; the tests pin it.
+const TODAY = new Date(2026, 7, 26);
+
+const dated: Block[] = [
+  {
+    id: "d1",
+    text: "Buy milk",
+    completed: false,
+    kind: "todo",
+    position: 1,
+    dueOn: "2026-09-01",
+  },
+  {
+    id: "d2",
+    text: "Call the plumber",
+    completed: false,
+    kind: "todo",
+    position: 2,
+    dueOn: "2026-08-25",
+  },
+  {
+    id: "d3",
+    text: "Post the letter",
+    completed: true,
+    kind: "todo",
+    position: 3,
+    dueOn: "2026-08-20",
+  },
+];
+
+describe("Sheet due dates", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(TODAY);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("resolves a token as the blank completes it and takes it out of the line", () => {
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "todo");
+    el.textContent = "Buy milk @friday ";
+    fireEvent.input(el);
+
+    expect(api.setDue).toHaveBeenCalledWith("b1", "2026-08-28");
+    expect(api.setText).toHaveBeenCalledWith("b1", "Buy milk ");
+    expect(el.textContent).toBe("Buy milk ");
+  });
+
+  it("resolves a token still on the line when the line is committed", () => {
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "todo");
+    el.textContent = "Buy milk @tomorrow";
+    el.focus();
+    fireEvent.keyDown(el, { key: "Enter" });
+
+    expect(api.setDue).toHaveBeenCalledWith("b1", "2026-08-27");
+    expect(el.textContent).toBe("Buy milk");
+  });
+
+  it("leaves text that only looks like a token exactly as typed", () => {
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "todo");
+    el.textContent = "Buy milk @fri ";
+    fireEvent.input(el);
+
+    expect(api.setDue).not.toHaveBeenCalled();
+    expect(api.setText).toHaveBeenCalledWith("b1", "Buy milk @fri ");
+  });
+
+  it("reads no token on a line that is not a task", () => {
+    const { api, container } = renderSheet();
+
+    const el = lineEl(container, "p");
+    el.textContent = "Notes for the trip @friday ";
+    fireEvent.input(el);
+
+    expect(api.setDue).not.toHaveBeenCalled();
+    expect(api.setText).toHaveBeenCalledWith("b3", "Notes for the trip @friday ");
+  });
+
+  it("writes the date in the right margin as a pencil annotation", () => {
+    const { container } = renderSheet({ blocks: dated });
+
+    const annotation = screen.getByRole("button", { name: "Due 1 Sep, Buy milk" });
+    expect(annotation.textContent).toBe("1 Sep");
+    // The desk label voice, faded ink, and nothing drawn around it.
+    expect(annotation.classList.contains("desk-label")).toBe(true);
+    expect(annotation.classList.contains("text-ink-faded")).toBe(true);
+    expect(annotation.className).not.toMatch(/bg-|rounded|border|ribbon/);
+    // In the margin, outside the typed text.
+    expect(lineEl(container, "todo").contains(annotation)).toBe(false);
+  });
+
+  it("darkens a date that has already passed to full ink", () => {
+    renderSheet({ blocks: dated });
+
+    const late = screen.getByRole("button", {
+      name: "Overdue 25 Aug, Call the plumber",
+    });
+    expect(late.getAttribute("data-due-state")).toBe("overdue");
+    expect(late.classList.contains("text-ink")).toBe(true);
+    expect(late.classList.contains("text-ink-faded")).toBe(false);
+  });
+
+  it("turns a date late the day after it, and not the day of it", () => {
+    const boundary: Block[] = [
+      {
+        id: "t1",
+        text: "Due today",
+        completed: false,
+        kind: "todo",
+        position: 1,
+        dueOn: "2026-08-26",
+      },
+      {
+        id: "t2",
+        text: "Due yesterday",
+        completed: false,
+        kind: "todo",
+        position: 2,
+        dueOn: "2026-08-25",
+      },
+    ];
+    renderSheet({ blocks: boundary });
+
+    expect(
+      screen
+        .getByRole("button", { name: "Due 26 Aug, Due today" })
+        .getAttribute("data-due-state"),
+    ).toBe("upcoming");
+    expect(
+      screen
+        .getByRole("button", { name: "Overdue 25 Aug, Due yesterday" })
+        .getAttribute("data-due-state"),
+    ).toBe("overdue");
+  });
+
+  it("fades a crossed-off task's date and drops its overdue weight", () => {
+    const { container } = renderSheet({ blocks: dated });
+
+    const struck = screen.getByRole("button", {
+      name: "Due 20 Aug, Post the letter",
+    });
+    expect(struck.getAttribute("data-due-state")).toBe("done");
+    expect(struck.classList.contains("text-ink-faint")).toBe(true);
+    // The strike is drawn over the typed text and stops at the margin.
+    const line = container.querySelector<HTMLElement>("[data-completed]")!;
+    expect(line.querySelector(".block-text")!.contains(struck)).toBe(false);
+  });
+
+  it("retains a date on conversion: no date clear rides along with the kind", () => {
+    const { api, rerender } = renderSheet({ blocks: dated });
+
+    // Backspace at the start of the dated task turns it into a note.
+    const el = screen.getByText("Buy milk");
+    el.focus();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.setStart(el, 0);
+    range.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    fireEvent.keyDown(el, { key: "Backspace" });
+
+    expect(api.convert).toHaveBeenCalledWith("d1", "p", "Buy milk");
+    expect(api.setDue).not.toHaveBeenCalled();
+
+    // Drawn as a note the date is hidden, but the row still holds it…
+    const asNote = dated.map((b) => (b.id === "d1" ? { ...b, kind: "p" as const } : b));
+    rerender(
+      <Sheet list={list} blocks={asNote} api={api} onRename={vi.fn()} />,
+    );
+    expect(screen.queryByRole("button", { name: "Due 1 Sep, Buy milk" })).toBeNull();
+
+    // …so converting back brings the same date out again.
+    rerender(<Sheet list={list} blocks={dated} api={api} onRename={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Due 1 Sep, Buy milk" })).toBeTruthy();
+  });
+
+  it("never draws a date on a line that is not a task, whatever the row holds", () => {
+    const others: Block[] = [
+      {
+        id: "o1",
+        text: "Notes",
+        completed: false,
+        kind: "p",
+        position: 1,
+        dueOn: "2026-09-01",
+      },
+      {
+        id: "o2",
+        text: "Later",
+        completed: false,
+        kind: "h2",
+        position: 2,
+        dueOn: "2026-09-01",
+      },
+      {
+        id: "o3",
+        text: "",
+        completed: false,
+        kind: "divider",
+        position: 3,
+        dueOn: "2026-09-01",
+      },
+    ];
+    const { container } = renderSheet({ blocks: others });
+
+    expect(container.querySelector("[data-due]")).toBeNull();
+    expect(screen.queryByText("1 Sep")).toBeNull();
+  });
+
+  it("sets a date from the margin affordance", () => {
+    const { api } = renderSheet();
+
+    fireEvent.click(screen.getByRole("button", { name: "Set a due date for Buy milk" }));
+    fireEvent.change(screen.getByLabelText("Due date"), {
+      target: { value: "2026-09-01" },
+    });
+
+    expect(api.setDue).toHaveBeenCalledWith("b1", "2026-09-01");
+  });
+
+  it("clears a date from the margin affordance, the only way to clear one", () => {
+    const { api, container } = renderSheet({ blocks: dated });
+
+    fireEvent.click(screen.getByRole("button", { name: "Due 1 Sep, Buy milk" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Clear the due date on Buy milk" }),
+    );
+    expect(api.setDue).toHaveBeenCalledWith("d1", null);
+
+    // There is no clearing token: typing one is ordinary text.
+    const el = lineEl(container, "todo");
+    el.textContent = "Buy milk @none ";
+    fireEvent.input(el);
+    expect(api.setDue).toHaveBeenCalledTimes(1);
+    expect(api.setText).toHaveBeenCalledWith("d1", "Buy milk @none ");
   });
 });

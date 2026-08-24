@@ -22,6 +22,14 @@ function patchSettled(page: Page, bodyIncludes: string) {
   );
 }
 
+// The reader's own calendar day, the way the browser reads it.
+function isoDaysAhead(days: number): string {
+  const now = new Date();
+  const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days);
+  const month = String(day.getMonth() + 1).padStart(2, "0");
+  return `${day.getFullYear()}-${month}-${String(day.getDate()).padStart(2, "0")}`;
+}
+
 test("write lines, cross off, edit, and delete on the sheet; ink survives a reload", async ({
   page,
 }) => {
@@ -122,4 +130,44 @@ test("markdown shortcuts and the slash menu shape the sheet", async ({ page }) =
   // "---" also draws a divider.
   await page.keyboard.type("---");
   await expect(page.locator('[data-kind="divider"]')).toHaveCount(2);
+});
+
+test("a due date is typed as a token, pencilled in the margin, and cleared from it", async ({
+  page,
+}) => {
+  await registerAndOpenSheet(page, "due");
+  const tomorrow = isoDaysAhead(1);
+
+  // Typing the token resolves it as the blank completes it: the token leaves
+  // the line and the date appears in the margin instead.
+  const dueSet = patchSettled(page, '"dueOn"');
+  const textSaved = patchSettled(page, '"text":"Buy milk "');
+  await page.getByRole("button", { name: /start typing, or press \//i }).click();
+  await page.keyboard.type("Buy milk @tomorrow ");
+  await expect(page.getByText("Buy milk", { exact: true })).toBeVisible();
+  await expect(page.getByText("@tomorrow")).toHaveCount(0);
+  const date = page.locator("[data-due]");
+  await expect(date).toHaveAttribute("data-due", tomorrow);
+  await expect(date).toHaveAttribute("data-due-state", "upcoming");
+  await dueSet;
+  await textSaved;
+
+  // The API was sent a resolved date, never a token, so it survives a reload.
+  await page.reload();
+  await page.getByRole("button", { name: "Groceries", exact: true }).click();
+  await expect(page.getByText("Buy milk", { exact: true })).toBeVisible();
+  await expect(page.locator("[data-due]")).toHaveAttribute("data-due", tomorrow);
+  await expect(page.getByText("@tomorrow")).toHaveCount(0);
+
+  // Crossing the line off strikes the typed text; the date fades instead.
+  await page.getByText("Buy milk").hover();
+  await page.getByRole("button", { name: "Cross off Buy milk" }).click();
+  await expect(page.locator("[data-due]")).toHaveAttribute("data-due-state", "done");
+
+  // Clearing happens from the margin, the only place it can happen.
+  const dueCleared = patchSettled(page, '"dueOn":null');
+  await page.locator("[data-due]").click();
+  await page.getByRole("button", { name: "Clear the due date on Buy milk" }).click();
+  await expect(page.locator("[data-due]")).toHaveCount(0);
+  await dueCleared;
 });

@@ -30,6 +30,17 @@ test("full journey: register → sheet → type blocks → cross off → filter 
   await expect(page.getByText("Buy milk")).toBeVisible();
   await expect(page.getByText("Buy bread")).toBeVisible();
 
+  // One line carries a due date: the token is consumed out of the text and
+  // pencilled into the right margin instead.
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Post the letter @tomorrow ");
+  await expect(page.getByText("Post the letter")).toBeVisible();
+  await expect(page.getByText("@tomorrow")).toHaveCount(0);
+  await expect(page.locator("[data-due]")).toHaveAttribute(
+    "data-due-state",
+    "upcoming",
+  );
+
   // Cross one off — a line is drawn over it, no checkbox anywhere.
   await page.getByText("Buy milk").hover();
   await page.getByRole("button", { name: "Cross off Buy milk" }).click();

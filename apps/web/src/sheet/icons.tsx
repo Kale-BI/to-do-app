@@ -107,3 +107,13 @@ export function LampIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function DueDateIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} aria-hidden="true">
+      <path {...stroke} d="M2.6 4.4 C 6 4.1, 10 4.7, 13.4 4.3 l 0.2 9 C 10 13.7, 6 13.1, 2.5 13.5 z" />
+      <path {...stroke} strokeWidth={1.1} d="M2.7 7.2 C 6 6.9, 10 7.5, 13.5 7.1" />
+      <path {...stroke} strokeWidth={1.1} d="M5.4 2.6 v 3 M10.6 2.6 v 3" />
+    </svg>
+  );
+}

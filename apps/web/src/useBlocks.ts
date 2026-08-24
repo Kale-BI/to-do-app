@@ -30,9 +30,10 @@ export function useBlocks(listId: string) {
     chains.current.set(id, next);
   }
 
+  // Shell keys the sheet by list id, so a different list arrives as a fresh
+  // mount with empty state — there is no previous sheet's ink to clear here.
   useEffect(() => {
     let active = true;
-    commit(null);
     void api.fetchBlocks(listId).then((fetched) => {
       if (active) commit(sorted(fetched));
     });
@@ -42,7 +43,6 @@ export function useBlocks(listId: string) {
       for (const timer of currentTimers.values()) clearTimeout(timer);
       currentTimers.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listId]);
 
   function patchLocal(id: string, patch: Partial<Block>) {
@@ -105,6 +105,7 @@ export function useBlocks(listId: string) {
       completed: false,
       kind,
       position: place(afterId),
+      dueOn: null,
     };
     commit(sorted([...(blocksRef.current ?? []), block]));
     enqueue(block.id, () =>
@@ -133,6 +134,7 @@ export function useBlocks(listId: string) {
       completed: false,
       kind,
       position,
+      dueOn: null,
     };
     commit(sorted([...current, block]));
     enqueue(block.id, () =>
@@ -141,6 +143,8 @@ export function useBlocks(listId: string) {
     return block;
   }
 
+  // A kind change carries the kind and the text and nothing else: converting a
+  // dated task to a heading must never send a date clear along with it.
   function convert(id: string, kind: BlockKind, text: string) {
     const timer = timers.current.get(id);
     if (timer) clearTimeout(timer);
@@ -148,6 +152,14 @@ export function useBlocks(listId: string) {
     pendingText.current.delete(id);
     patchLocal(id, { kind, text });
     enqueue(id, () => api.updateBlock(id, { kind, text }));
+  }
+
+  // A date set from the margin or resolved out of a token. An explicit null is
+  // a clear; a patch that says nothing about the date leaves it alone, which is
+  // what every other write here does.
+  function setDue(id: string, dueOn: string | null) {
+    patchLocal(id, { dueOn });
+    enqueue(id, () => api.updateBlock(id, { dueOn }));
   }
 
   function toggle(id: string, completed: boolean) {
@@ -172,6 +184,7 @@ export function useBlocks(listId: string) {
     flushText,
     convert,
     toggle,
+    setDue,
     remove,
   };
 }

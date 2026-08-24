@@ -156,7 +156,7 @@ An ink-on-paper monochrome world with one green-olive backdrop and one red accen
 
 The desk fills the viewport (`min-height: 100vh`, fixed-attachment background). Content sits in a centered `max-w-5xl` container: a fixed-width sheet-stack sidebar on the left (13rem / `w-52` at `sm:`, full-width stacked above it on small screens) and the selected sheet as the main column (`flex-1`, effectively ~42rem). The sheet itself is one tall piece of paper — `min-h-[78vh]`, padded `px-10 pt-12 pb-6` (`sm:px-16`) — with the typed title and filter tabs on one baseline row, a ruled `hr` beneath (border `ink/25`), then the block lines.
 
-Each block line is a three-column grid — `2rem | 1fr | 2rem` — pulled `-mx-8` into the sheet's padding so the outer columns act as *margins* of the page: strike/unstrike tools live in the left margin, delete in the right. Below the last line, a `min-h-16` flexible click target extends the writing surface — clicking the empty bottom of the page focuses the last line (or starts the sheet).
+Each block line is a four-column grid — `2rem | 1fr | auto | 2rem` — pulled `-mx-8` into the sheet's padding so the outer columns act as *margins* of the page: strike/unstrike tools live in the left margin, the due-date annotation and delete in the right. Below the last line, a `min-h-16` flexible click target extends the writing surface — clicking the empty bottom of the page focuses the last line (or starts the sheet).
 
 Desk chrome stays out of the page: a typed session strip across the top (app name left; email + sign-out right), the lamp toggle fixed top-right (`top-4 right-4`), and the API health line fixed bottom-left. Vertical rhythm on the sheet comes from line-height plus per-kind gaps (h1 `mt-5`, h2 `mt-3`, divider `my-2`, todos/paragraphs flush).
 
@@ -209,6 +209,12 @@ Motion note (applies across components): the world has three animations — `she
 - **Character:** pencil marks in the page margin that appear when the hand hovers the line.
 - **Behavior:** opacity 0 at rest; revealed (0.12s) by row hover, `:focus-within`, or their own `:focus-visible`. On touch devices (`hover: none`) they rest at opacity 0.6 instead of hiding.
 - **Instances:** strike/unstrike (ribbon, left margin), delete line (`--ink-faded`, turning ribbon on hover, right margin), sidebar rename (pencil icon) and delete. All are 1.25rem (`h-5 w-5`) icon buttons.
+
+### The margin date (`DueMargin.tsx`)
+- **Character:** a date pencilled in the right margin beside a typed task line — an annotation, not a field. Desk-label voice at 0.625rem, on the line's own baseline, no pill, no badge, no background fill.
+- **Weight, not colour:** upcoming `--ink-faded`; already past `--ink` (full ink, so a late page sits heavier without alarming); crossed off `--ink-faint` and never late. No ribbon red — an overdue date is not struck, torn up, or wrong.
+- **Affordance:** a line-tool calendar mark at rest when the line has no date, revealed on hover like the other margin tools; clicking either it or an existing date opens a small paper scrap (`.menu-paper`) holding a date field and a Clear mark. Setting and clearing both happen here; typing can only set.
+- **Tasks only:** other block kinds keep whatever date their row holds but never draw it.
 
 ### Cards / Paper surfaces (`.paper`, `.sheet-stack`, `.menu-paper`)
 - **Corner Style:** 1px radius (2px for the menu scrap).

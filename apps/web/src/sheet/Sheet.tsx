@@ -1,13 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { Block, BlockKind, List } from "@todo/shared";
 import type { BlocksApi } from "../useBlocks";
 import { caretOffset } from "./caret";
+import { todayIso } from "./dueDate";
 import { BlockLine, type BlockLineHandle, type MenuKey } from "./BlockLine";
 import { filterEntries, SlashMenu } from "./SlashMenu";
 
@@ -49,13 +44,16 @@ export function Sheet({
   const [menu, setMenu] = useState<Menu | null>(null);
   const [focusTarget, setFocusTarget] = useState<FocusTarget | null>(null);
   const [title, setTitle] = useState(list.name);
+  const [titleFor, setTitleFor] = useState(list.name);
   const refs = useRef(new Map<string, BlockLineHandle>());
   const sheetRef = useRef<HTMLDivElement>(null);
   const focusSeq = useRef(0);
 
-  useEffect(() => {
+  // A different sheet, or a rename from the stack, re-inks the title field.
+  if (titleFor !== list.name) {
+    setTitleFor(list.name);
     setTitle(list.name);
-  }, [list.name]);
+  }
 
   const registerRef = useCallback(
     (id: string, handle: BlockLineHandle | null) => {
@@ -76,6 +74,9 @@ export function Sheet({
   }, [focusTarget]);
 
   const visible = blocks.filter((block) => visibleUnder(filter, block));
+  // Read once per draw off the browser's own clock, so "late" means late where
+  // the reader is sitting.
+  const today = todayIso();
 
   function blockAt(id: string) {
     return blocks.find((b) => b.id === id);
@@ -410,6 +411,8 @@ export function Sheet({
               onNavigate={handleNavigate}
               onToggle={api.toggle}
               onDelete={handleDelete}
+              onSetDue={api.setDue}
+              today={today}
               onSlashOpen={handleSlashOpen}
               onMenuKey={handleMenuKey}
               onBlur={handleBlur}

@@ -12,6 +12,8 @@ import {
   placeCaret,
   selectionCollapsed,
 } from "./caret";
+import { DueMargin } from "./DueMargin";
+import { resolveDueToken } from "./dueDate";
 import { CrossIcon, StrikeIcon, UnstrikeIcon } from "./icons";
 
 export type BlockLineHandle = {
@@ -46,6 +48,11 @@ const KIND_TEXT_CLASS: Record<Exclude<BlockKind, "divider">, string> = {
   h2: "mt-1 text-[1.0625rem] uppercase tracking-[0.05em] leading-[1.6]",
 };
 
+// Four margins to a line: cross-off, the typed text, the pencil date, tear-up.
+// The outer columns are pulled into the sheet's padding so they read as the
+// page's own margins.
+const LINE_GRID = "block-line group grid grid-cols-[2rem_1fr_auto_2rem] -mx-8";
+
 const KIND_GAP_CLASS: Record<BlockKind, string> = {
   todo: "",
   p: "",
@@ -64,6 +71,7 @@ const PLACEHOLDER: Record<Exclude<BlockKind, "divider">, string> = {
 export function BlockLine({
   block,
   menuOpen,
+  today,
   registerRef,
   onInput,
   onTransform,
@@ -75,12 +83,14 @@ export function BlockLine({
   onNavigate,
   onToggle,
   onDelete,
+  onSetDue,
   onSlashOpen,
   onMenuKey,
   onBlur,
 }: {
   block: Block;
   menuOpen: boolean;
+  today: string;
   registerRef: (id: string, handle: BlockLineHandle | null) => void;
   onInput: (id: string, text: string) => void;
   onTransform: (id: string, kind: BlockKind, text: string) => void;
@@ -92,13 +102,21 @@ export function BlockLine({
   onNavigate: (id: string, dir: -1 | 1) => void;
   onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
+  onSetDue: (id: string, dueOn: string | null) => void;
   onSlashOpen: (id: string, slashOffset: number) => void;
   onMenuKey: (key: MenuKey) => void;
   onBlur: (id: string) => void;
 }) {
   const textRef = useRef<HTMLDivElement>(null);
-  const wasCompleted = useRef(block.completed);
   const [strikeAnimated, setStrikeAnimated] = useState(false);
+  const [wasCompleted, setWasCompleted] = useState(block.completed);
+
+  // The strike draws itself on the crossing-off, not on every later draw of an
+  // already-finished line.
+  if (wasCompleted !== block.completed) {
+    setWasCompleted(block.completed);
+    setStrikeAnimated(block.completed);
+  }
 
   // The contentEditable is uncontrolled while focused; sync external changes.
   useLayoutEffect(() => {
@@ -107,12 +125,6 @@ export function BlockLine({
       el.textContent = block.text;
     }
   });
-
-  useLayoutEffect(() => {
-    if (block.completed && !wasCompleted.current) setStrikeAnimated(true);
-    if (!block.completed) setStrikeAnimated(false);
-    wasCompleted.current = block.completed;
-  }, [block.completed]);
 
   useLayoutEffect(() => {
     const handle: BlockLineHandle = {
@@ -150,6 +162,18 @@ export function BlockLine({
 
   const kind = block.kind;
 
+  // Only a task line takes a date. The token is consumed the moment it
+  // completes — at a blank, or when the line is committed — so the date is
+  // written on the page exactly once, in the margin.
+  function consumeDueToken(el: HTMLElement, text: string): string {
+    if (kind !== "todo") return text;
+    const resolved = resolveDueToken(text, new Date());
+    if (!resolved) return text;
+    el.textContent = resolved.text;
+    onSetDue(block.id, resolved.dueOn);
+    return resolved.text;
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const el = textRef.current;
     if (!el) return;
@@ -169,10 +193,13 @@ export function BlockLine({
         if (kind === "todo") onToggle(block.id, !block.completed);
         return;
       }
-      const text = el.textContent ?? "";
-      const offset = caretOffset(el) ?? text.length;
-      const before = text.slice(0, offset);
-      const after = text.slice(offset);
+      const typed = el.textContent ?? "";
+      const offset = caretOffset(el) ?? typed.length;
+      // Committing the line completes a token still sitting at its end.
+      const text = consumeDueToken(el, typed);
+      const cut = Math.min(offset, text.length);
+      const before = text.slice(0, cut);
+      const after = text.slice(cut);
       if (before === "" && after !== "") {
         onEnterAtStart(block.id);
         return;
@@ -242,7 +269,28 @@ export function BlockLine({
         return;
       }
     }
+    // A blank finishes a token. The line rewrites itself under the cursor and
+    // the caret carries on from where the writer left it.
+    if (/\s$/.test(text)) {
+      const offset = caretOffset(el) ?? text.length;
+      const consumed = consumeDueToken(el, text);
+      if (consumed !== text) {
+        placeCaret(el, Math.max(0, offset - (text.length - consumed.length)));
+        onInput(block.id, consumed);
+        return;
+      }
+    }
     onInput(block.id, text);
+  }
+
+  function handleBlur() {
+    const el = textRef.current;
+    if (el) {
+      const text = el.textContent ?? "";
+      const consumed = consumeDueToken(el, text);
+      if (consumed !== text) onInput(block.id, consumed);
+    }
+    onBlur(block.id);
   }
 
   const isTodo = kind === "todo";
@@ -251,7 +299,7 @@ export function BlockLine({
 
   return (
     <div
-      className={`block-line group grid grid-cols-[2rem_1fr_2rem] items-start ${KIND_GAP_CLASS[kind]} -mx-8`}
+      className={`${LINE_GRID} items-start ${KIND_GAP_CLASS[kind]}`}
       data-kind={kind}
       data-completed={done || undefined}
     >
@@ -287,10 +335,22 @@ export function BlockLine({
           }`}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
-          onBlur={() => onBlur(block.id)}
+          onBlur={handleBlur}
         />
         {done ? <StrikeOverlay textEl={textRef} animate={strikeAnimated} /> : null}
       </div>
+      {/* Dates are drawn for tasks only — the rule lives here, at the drawing,
+          not in the row: another kind keeps its date, it just does not show. */}
+      {isTodo ? (
+        <DueMargin
+          block={block}
+          label={label}
+          today={today}
+          onSetDue={onSetDue}
+        />
+      ) : (
+        <span />
+      )}
       <span className="flex justify-center pt-[0.45em]">
         <button
           type="button"
@@ -408,7 +468,7 @@ function DividerLine({
 
   return (
     <div
-      className={`block-line group grid grid-cols-[2rem_1fr_2rem] items-center ${KIND_GAP_CLASS.divider} -mx-8`}
+      className={`${LINE_GRID} items-center ${KIND_GAP_CLASS.divider}`}
       data-kind="divider"
     >
       <span />
@@ -449,6 +509,7 @@ function DividerLine({
           />
         </svg>
       </button>
+      <span />
       <span className="flex justify-center">
         <button
           type="button"
