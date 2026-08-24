@@ -49,12 +49,19 @@ export const BlockKindSchema = z.enum(["todo", "p", "h1", "h2", "divider"]);
 
 export type BlockKind = z.infer<typeof BlockKindSchema>;
 
+// A plain calendar day, never a timestamp: no time, no zone. The client
+// resolves whatever the user typed against its own clock and sends the day.
+export const DueOnSchema = z.iso.date();
+
+export type DueOn = z.infer<typeof DueOnSchema>;
+
 export const BlockSchema = z.object({
   id: z.string(),
   text: z.string(),
   completed: z.boolean(),
   kind: BlockKindSchema,
   position: z.number(),
+  dueOn: DueOnSchema.nullable().optional(),
 });
 
 export type Block = z.infer<typeof BlockSchema>;
@@ -74,15 +81,13 @@ export const UpdateBlockSchema = z
     completed: z.boolean().optional(),
     kind: BlockKindSchema.optional(),
     position: z.number().finite().optional(),
+    // Three distinguishable intents: a day sets it, null clears it, absent
+    // leaves it alone.
+    dueOn: DueOnSchema.nullable().optional(),
   })
-  .refine(
-    (value) =>
-      value.text !== undefined ||
-      value.completed !== undefined ||
-      value.kind !== undefined ||
-      value.position !== undefined,
-    { message: "Nothing to update" },
-  );
+  // Key presence, not definedness: `{ dueOn: null }` is a real edit, so an
+  // "is every field undefined" check would wrongly reject a clear.
+  .refine((value) => Object.keys(value).length > 0, { message: "Nothing to update" });
 
 export type UpdateBlock = z.input<typeof UpdateBlockSchema>;
 

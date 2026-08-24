@@ -125,6 +125,7 @@ export function createApp(db: Db) {
       completed: row.completed,
       kind: row.kind,
       position: row.position,
+      dueOn: row.dueOn,
     };
   }
 
@@ -163,6 +164,7 @@ export function createApp(db: Db) {
       completed: false,
       kind: parsed.data.kind,
       position,
+      dueOn: null,
       listId: c.req.param("listId"),
       createdAt: now,
       updatedAt: now,

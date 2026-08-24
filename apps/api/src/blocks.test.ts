@@ -47,6 +47,17 @@ async function addBlock(
   return BlockResponseSchema.parse(await res.json()).block;
 }
 
+async function patchBlock(
+  app: App,
+  cookie: string,
+  id: string,
+  patch: Record<string, unknown>,
+) {
+  const res = await app.request(`/api/blocks/${id}`, jsonInit("PATCH", patch, cookie));
+  expect(res.status).toBe(200);
+  return BlockResponseSchema.parse(await res.json()).block;
+}
+
 async function getBlocks(app: App, cookie: string, listId: string) {
   const res = await app.request(`/api/lists/${listId}/blocks`, {
     headers: { cookie },
@@ -137,6 +148,52 @@ describe("blocks", () => {
     expect(updated.kind).toBe("h2");
   });
 
+  it("stores no due date by default and survives a round trip once set", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Call the plumber" });
+    expect(created.dueOn).toBeNull();
+
+    const dated = await patchBlock(app, cookie, created.id, { dueOn: "2026-08-28" });
+    expect(dated.dueOn).toBe("2026-08-28");
+
+    expect(await getBlocks(app, cookie, listId)).toEqual([dated]);
+  });
+
+  it("clears a due date with an explicit null, and leaves it alone when absent", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Call the plumber" });
+    await patchBlock(app, cookie, created.id, { dueOn: "2026-08-28" });
+
+    const untouched = await patchBlock(app, cookie, created.id, { text: "Call the roofer" });
+    expect(untouched.dueOn).toBe("2026-08-28");
+
+    const cleared = await patchBlock(app, cookie, created.id, { dueOn: null });
+    expect(cleared.dueOn).toBeNull();
+  });
+
+  it("retains a due date across a conversion away from todo and back", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Call the plumber" });
+    await patchBlock(app, cookie, created.id, { dueOn: "2026-08-28" });
+
+    const asHeading = await patchBlock(app, cookie, created.id, { kind: "h2" });
+    expect(asHeading.kind).toBe("h2");
+    expect(asHeading.dueOn).toBe("2026-08-28");
+
+    const backToTodo = await patchBlock(app, cookie, created.id, { kind: "todo" });
+    expect(backToTodo.kind).toBe("todo");
+    expect(backToTodo.dueOn).toBe("2026-08-28");
+  });
+
+  it("rejects a due date that is not a plain calendar day", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Call the plumber" });
+
+    for (const dueOn of ["2026-08-28T09:00:00Z", "friday", "2026-02-30"]) {
+      const res = await app.request(
+        `/api/blocks/${created.id}`,
+        jsonInit("PATCH", { dueOn }, cookie),
+      );
+      expect(res.status).toBe(400);
+    }
+  });
+
   it("deletes a block", async () => {
     const created = await addBlock(app, cookie, listId, { text: "Buy milk" });
 
@@ -147,6 +204,18 @@ describe("blocks", () => {
 
     expect(res.status).toBe(204);
     expect(await getBlocks(app, cookie, listId)).toEqual([]);
+  });
+
+  it("rejects an empty patch but not a due-date clear", async () => {
+    const created = await addBlock(app, cookie, listId, { text: "Call the plumber" });
+
+    expect(
+      (await app.request(`/api/blocks/${created.id}`, jsonInit("PATCH", {}, cookie))).status,
+    ).toBe(400);
+    expect(
+      (await app.request(`/api/blocks/${created.id}`, jsonInit("PATCH", { dueOn: null }, cookie)))
+        .status,
+    ).toBe(200);
   });
 
   it("rejects unknown kinds and empty updates", async () => {
