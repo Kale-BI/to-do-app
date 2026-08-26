@@ -12,9 +12,9 @@ Issues and PRDs for this repo live in Linear, in the **To-do App** project on th
 - **List issues**: `list_issues` with `project: "To-do App"`, plus `state`, `label`, or `assignee` filters as needed. Use `fields` to keep responses lean (e.g. `["title", "status", "labels", "assignee", "parentId"]`).
 - **Comment on an issue**: `save_comment` with `issueId` and a Markdown `body`.
 - **Apply / remove labels**: `save_issue` with the `labels` array. It **replaces the full label set**, so read the issue's current labels first and send the complete desired list.
-- **Close**: `save_issue` with `state: "Done"`; use `state: "Canceled"` for wontfix outcomes. Leave a closing `save_comment` explaining why.
+- **Close**: `save_issue` with `state: "Done"`; use `state: "Canceled"` for work that will not be actioned. Leave a closing `save_comment` explaining why.
 
-Triage label vocabulary is defined in `docs/agents/triage-labels.md`; create any missing label in Linear with `create_issue_label` before first use.
+Triage label vocabulary is defined in `docs/agents/triage-labels.md`. It is a closed set of four waiting states, all of which already exist in Linear — do not create new triage labels.
 
 ## Pull requests as a triage surface
 
