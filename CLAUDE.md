@@ -8,7 +8,7 @@ Issues and PRDs live in Linear (project **To-do App**, team Eng), managed via th
 
 ### Triage labels
 
-Default vocabulary — the five canonical roles used as-is (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+Four waiting states (`ready-for-agent`, `ready-for-human`, `needs-human-input`, `needs-grilling`), each naming what the ticket waits for. All four exist in Linear and are team-scoped; triage never creates labels. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
