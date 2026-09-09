@@ -20,7 +20,7 @@ Each list is a single typed sheet you write on directly — tasks, headings, and
 
 ## Operating Context
 
-Daily-driver utility, used in short frequent sessions on a laptop, sometimes at night (a dedicated night look exists). Monorepo: Hono + Drizzle/SQLite API (`apps/api`), React 19 + Vite + Tailwind 4 web client (`apps/web`), shared zod contracts (`packages/shared`). Auth via better-auth sessions. Issues/PRDs tracked in Linear (To-do App project, Ops team, `VETTA-<n>`).
+Daily-driver utility, used in short frequent sessions on a laptop, sometimes at night (a dedicated night look exists). Monorepo: Hono + Drizzle/SQLite API (`apps/api`), React 19 + Vite + Tailwind 4 web client (`apps/web`), shared zod contracts (`packages/shared`). Auth via better-auth sessions. Issues/PRDs tracked in Linear (To-do App project, Engineering team, `ENG-<n>`).
 
 ## Capabilities and Constraints
 

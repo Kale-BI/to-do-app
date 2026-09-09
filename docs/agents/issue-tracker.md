@@ -1,48 +1,106 @@
 # Issue tracker: Linear
 
-Issues and PRDs for this repo live in Linear, in the **To-do App** project on the **Eng** team (issue keys `VETTA-<n>`). Use the `linear-server` MCP tools for all operations.
-
-- Project: `To-do App` (https://linear.app/vetta/project/to-do-app-fb8a539c66e3)
-- Team: `Eng`
+Issues for this repo live in Linear, in the **`To-do App`** project on the **`Engineering`** team. Identifiers look like `ENG-123`.
 
 ## Conventions
 
-- **Create an issue**: `save_issue` with `title`, `team: "Eng"`, `project: "To-do App"`, and a Markdown `description`. Do not pass `id` when creating.
-- **Read an issue**: `get_issue` with the identifier (e.g. `VETTA-42`); pass `includeRelations: true` when blocking/related links matter. Fetch discussion with `list_comments`.
-- **List issues**: `list_issues` with `project: "To-do App"`, plus `state`, `label`, or `assignee` filters as needed. Use `fields` to keep responses lean (e.g. `["title", "status", "labels", "assignee", "parentId"]`).
-- **Comment on an issue**: `save_comment` with `issueId` and a Markdown `body`.
-- **Apply / remove labels**: `save_issue` with the `labels` array. It **replaces the full label set**, so read the issue's current labels first and send the complete desired list.
-- **Close**: `save_issue` with `state: "Done"`; use `state: "Canceled"` for work that will not be actioned. Leave a closing `save_comment` explaining why.
-
-Triage label vocabulary is defined in `docs/agents/triage-labels.md`. It is a closed set of four waiting states, all of which already exist in Linear — do not create new triage labels.
-
-## Pull requests as a triage surface
-
-**PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
-
-Pull requests still live on GitHub. When set to `yes`, PRs run through the same triage vocabulary using the `gh` CLI:
-
-- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
-- **List external PRs for triage**: `gh pr list --state open --json number,title,body,labels,author,authorAssociation,comments` then keep only `authorAssociation` of `CONTRIBUTOR`, `FIRST_TIME_CONTRIBUTOR`, or `NONE` (drop `OWNER`/`MEMBER`/`COLLABORATOR`).
-- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
-
-Cross-linking: reference Linear issues from PRs by identifier (`VETTA-42`) in the PR title or branch name — Linear links them automatically. `get_issue` returns a suggested `gitBranchName`.
+- Use the Linear MCP tools (`get_issue`, `list_issues`, `save_issue`, `save_comment`, `list_issue_labels`, `list_issue_statuses`).
+- **Create an issue**: `save_issue` with the team and this project set.
+- **Read**: `get_issue` by identifier; `list_comments` for the thread.
+- **List**: `list_issues` filtered by this project, and by state or label as needed.
+- **Comment**: `save_comment` on the issue.
+- **Labels**: `save_issue` with the updated label set. Labels are team-scoped.
+- **Close**: `save_issue` setting the state to Done (actioned) or Canceled (will not fix).
+- **State names**: list the team's issue statuses before setting one. A wrong state name makes a save silently no-op.
+- **Sub-issues and blocking**: set `parentId` at creation for tickets cut from a spec; use Linear's native `blockedBy` relation for gates.
+- **Provenance**: an autonomous agent creates issues and comments through its **own** Linear identity, never through a human's credentials. The creator field is how the team tells agent-filed work from human-filed work. Interactive sessions where a human is driving file as that human.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a Linear issue in the **To-do App** project (`save_issue`).
+Create a Linear issue in this project.
 
 ## When a skill says "fetch the relevant ticket"
 
-Run `get_issue` with the `VETTA-<n>` identifier, then `list_comments` for the discussion.
+Fetch the Linear issue by identifier, including comments.
+
+**Images in tickets are readable; check the URL for `?signature=` before choosing how.** The Linear MCP returns bodies with *signed* `uploads.linear.app` URLs, public and valid for a few minutes: use `extract_images`, or fetch each one the moment you read the text. Raw GraphQL returns the stored markdown with *unsigned* URLs, which answer 401 to a plain GET and need a Linear token in the `Authorization` header. With no token and no way to fetch, say so in the plan and ask the maintainer to transcribe the images into a comment; never silently skip them.
+
+## How to write here
+
+Everything on this tracker is read by agents and by colleagues who were not in the conversation that produced it. The tracker holds the **summary**: what a colleague would write, short and on point. The full material lives in the effort's **artefact** (see `docs/agents/artefact.md`), linked from the issue.
+
+- Open with the verdict, in one sentence the reader could stop at.
+- Refer to issues, specs and pull requests by title, with the identifier inside the link.
+- Titles state the problem, not the intended fix.
+- Keep what is checkable (a number, a test name, a linked ticket); cut the adjectives.
+- Whole sentences, glossary terms, no shorthand coined mid-session.
+- Write the body of issues you create. On an issue someone else wrote, comment; never rewrite their body.
+- A comment is a glance: what happened and what the reader owes you, with a link to the artefact for everything that needs reading rather than glancing. Decision cards and grilling agendas are the exception: they stay inline, written to be answered from a phone.
+- Mentions use the Linear display name (`@davide`), not full names.
+
+## What a ready ticket contains
+
+A ticket an agent can start unattended states, in its body or its artefact section:
+
+- **What to build**: the end-to-end behaviour it makes work, from the user's side.
+- **Evidence**: the proof a human will look at to say "it works", one of: screenshot or GIF, terminal transcript, query and rows, test run, live URL. A passing test suite is not evidence.
+- **Plan**: the areas touched and the seams the work is tested at, plus every fact the work depends on that was looked up rather than assumed: how to run it, what already exists, what was verified and how.
+- **Blocked by**: the tickets that gate it, set as Linear's native `blockedBy` relation, or none.
+
+Tickets cut from a spec are the spec's sub-issues (`parentId` set to the spec). Evidence and human review happen on the ticket a human opened: the spec when tickets were cut from one, otherwise the ticket itself; sub-issues go straight to Done.
+
+A question only the maintainer can answer is a **blank**. Name it, with its options and a recommendation, instead of guessing.
+
+## The follow-up ticket
+
+An out-of-scope finding filed from other work is a ticket of its own, created untriaged; a human decides when it enters the queue. The title states the problem, never the intended fix. A finding that cannot fill the first two fields from observed facts is an opinion, not a ticket.
+
+```markdown
+**Found while:** <parent ticket, linked, and what happened there that surfaced this>
+**Cost of not doing it:** <who hits what, when>
+**Current behaviour:** <readable by someone who never saw the parent work>
+**Desired behaviour:** <the behaviour wanted, not the change to make>
+```
+
+Create it from the team's **Follow-up** issue template, which pre-fills this body.
+
+## Where a decision record lands
+
+A grilling session's decision record is an issue: the summary in the body, the full record in the artefact. When an issue prompted the session, the record goes on that issue instead of a new one.
+
+## Triage state mapping
+
+The triage skill's four routes render here as **states**, not labels. Confirm the names against `list_issue_statuses` before writing this table; the defaults below are the Eng team's names in Kale's workspace.
+
+| Route | Here |
+|---|---|
+| *(untriaged)* | state **Backlog** |
+| `ready-for-agent` | state **Todo**, delegation kept |
+| `ready-for-human` | state **Todo**, delegation removed, creator tagged |
+| `needs-decision` | state **Needs Decision** (+ decision card comment) |
+| `needs-grilling` | state **Needs Grilling** (+ agenda comment) |
+| `bug` / `enhancement` | labels **Bug** / **Improvement** |
+| *duplicate* | state **Duplicate**, `duplicateOf` set to the survivor |
+| *declined* | state **Not Planned**, reason in the closing comment |
+| *already done or invalid* | state **Done** or **Canceled**, evidence in the closing comment |
+
+**Not Planned is the record of what the project chose not to do.** One ticket per declined ask, with the reason in its closing comment; later tickets asking the same thing are marked Duplicate of it, so one ticket accretes the ask's history. Canceled and Done stay for tickets that were invalid or already done, so a search can tell a deliberate no from a never-was.
+
+**Untriaged work waits in Backlog.** A delegated Backlog ticket gets a triage session, and the session always exits Backlog into one of the states above. Needs Decision and Needs Grilling are outside the dispatcher's active states, so a parked ticket cannot re-dispatch.
+
+**Dispatch:** the Symphony project process `todo`, one orchestrator per Linear project. Where Symphony runs, the lever is *delegating* the issue to the **Symphony** agent, with the state naming the verb (**Backlog** = triage, **Todo** = implement, **Ship** = close out). Delegating in Backlog is consent for the whole ride. Undelegated tickets are untouched in every state; take work back by removing the delegation.
+
+**Resuming a parked ticket is one drag.** Answer the decision card or hold the grilling session, then move the ticket to **Backlog** (re-triage reads the reply) or straight to **Todo** (the answer made it ready).
+
+Pipeline states beyond triage: **In Progress** = agent working; **Human Review** = a human gate (spec sign-off, or PR review once a PR is linked); **Ship** = landing in progress, never parked; **Blocked** = an implementation that cannot proceed, always carrying the agent's diagnosis, never a triage destination; **Done** = verified in production (or merged, for repos with no deploy).
 
 ## Wayfinding operations
 
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
+Used by `/wayfinder`. The **map** is a single Linear issue with **child** tickets as sub-issues.
 
-- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body. Create with `save_issue` (`labels: ["wayfinder:map"]`).
-- **Child ticket**: an issue created with `parentId` set to the map issue — Linear sub-issues are native. Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: Linear's native issue relations. Add an edge with `save_issue` on the child passing `blockedBy: ["VETTA-<blocker>"]` (append-only; remove with `removeBlockedBy`). Read edges back with `get_issue` + `includeRelations: true`. A ticket is unblocked when every blocker is completed or canceled.
-- **Frontier query**: `list_issues` with `parentId: <map>` and `state: "started"`-or-`"backlog"`/`"unstarted"` state types (i.e. not completed/canceled); drop any with an open blocker (check relations) or an assignee; first in map order wins.
-- **Claim**: `save_issue` with `assignee: "me"` — the session's first write.
-- **Resolve**: `save_comment` with the answer, then `save_issue` with `state: "Done"`, then append a context pointer (gist + link) to the map's Decisions-so-far.
+- **Map**: an issue in this project labeled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body.
+- **Child ticket**: a sub-issue of the map (set `parentId`), labeled `wayfinder:<type>` (`research`, `prototype`, `grilling`, `task`).
+- **Blocking**: Linear's native blocked-by relations. A ticket is unblocked when every blocker is done.
+- **Frontier**: open, unblocked, unassigned children of the map; first in map order wins.
+- **Claim**: assign the issue to yourself before any work.
+- **Resolve**: post the answer as a comment, mark the issue Done, append a context pointer (gist + link) to the map's Decisions-so-far.
