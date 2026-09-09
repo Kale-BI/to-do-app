@@ -35,7 +35,7 @@ Everything on this tracker is read by agents and by colleagues who were not in t
 - Keep what is checkable (a number, a test name, a linked ticket); cut the adjectives.
 - Whole sentences, glossary terms, no shorthand coined mid-session.
 - Write the body of issues you create. On an issue someone else wrote, comment; never rewrite their body.
-- A comment is a glance: what happened and what the reader owes you, with a link to the artefact for everything that needs reading rather than glancing. Decision cards and grilling agendas are the exception: they stay inline, written to be answered from a phone.
+- A comment says what happened and what the reader owes you, with a link to the artefact for everything that needs reading rather than a quick look. Decision cards and grilling agendas are the exception: they stay inline, written to be answered from a phone.
 - Mentions use the Linear display name (`@davide`), not full names.
 
 ## What a ready ticket contains
