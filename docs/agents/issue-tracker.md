@@ -62,8 +62,6 @@ An out-of-scope finding filed from other work is a ticket of its own, created un
 **Desired behaviour:** <the behaviour wanted, not the change to make>
 ```
 
-Create it from the team's **Follow-up** issue template, which pre-fills this body.
-
 ## Where a decision record lands
 
 A grilling session's decision record is an issue: the summary in the body, the full record in the artefact. When an issue prompted the session, the record goes on that issue instead of a new one.
@@ -79,7 +77,6 @@ The triage skill's four routes render here as **states**, not labels. Confirm th
 | `ready-for-human` | state **Todo**, delegation removed, creator tagged |
 | `needs-decision` | state **Needs Decision** (+ decision card comment) |
 | `needs-grilling` | state **Needs Grilling** (+ agenda comment) |
-| `bug` / `enhancement` | labels **Bug** / **Improvement** |
 | *duplicate* | state **Duplicate**, `duplicateOf` set to the survivor |
 | *declined* | state **Not Planned**, reason in the closing comment |
 | *already done or invalid* | state **Done** or **Canceled**, evidence in the closing comment |
