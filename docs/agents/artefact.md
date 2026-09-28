@@ -4,8 +4,8 @@ An **artefact** is the long-form record of one effort: the grilling record, the 
 
 ## Where
 
-- **Repo:** `Kale-BI/dossiers`, served at `https://dossiers.eatkale.ai` behind Cloudflare Access, deployed by a push to `main` (Cloudflare Workers Builds; `npx wrangler deploy` is the break-glass path).
-- **Page:** `public/<effort-slug>.html`, served at `https://dossiers.eatkale.ai/<effort-slug>`, named after the **effort**, never after a ticket. One effort, one page. Never rename a slug once it has been linked from the tracker; a renamed effort keeps the old file as a one-line redirect.
+- **Repo:** `Kale-BI/dossiers`, served at `https://dossiers.redkale.ai` behind Cloudflare Access, deployed by a push to `main` (Cloudflare Workers Builds; `npx wrangler deploy` is the break-glass path).
+- **Page:** `public/<effort-slug>.html`, served at `https://dossiers.redkale.ai/<effort-slug>`, named after the **effort**, never after a ticket. One effort, one page. Never rename a slug once it has been linked from the tracker; a renamed effort keeps the old file as a one-line redirect.
 - **Index:** `public/index.html`, hand-maintained, newest first. Add the line when the page is created.
 
 A skill creates the page the first time it has something long-form to write, never ahead of need, starting from `templates/dossier.html` (`./scripts/new-dossier.sh <slug> "<Title>"` copies it into place).

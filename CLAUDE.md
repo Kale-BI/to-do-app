@@ -8,7 +8,7 @@ Issues live in Linear, project "To-do App" (Engineering team, identifiers `ENG-<
 
 ### Artefact
 
-Artefacts are pages in Kale-BI/dossiers, served at dossiers.eatkale.ai. See `docs/agents/artefact.md`.
+Artefacts are pages in Kale-BI/dossiers, served at dossiers.redkale.ai. See `docs/agents/artefact.md`.
 
 ### Domain docs
 
