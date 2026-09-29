@@ -97,7 +97,7 @@ export function BlockLine({
   onBlur: (id: string) => void;
 }) {
   const textRef = useRef<HTMLDivElement>(null);
-  const wasCompleted = useRef(block.completed);
+  const [wasCompleted, setWasCompleted] = useState(block.completed);
   const [strikeAnimated, setStrikeAnimated] = useState(false);
 
   // The contentEditable is uncontrolled while focused; sync external changes.
@@ -108,11 +108,10 @@ export function BlockLine({
     }
   });
 
-  useLayoutEffect(() => {
-    if (block.completed && !wasCompleted.current) setStrikeAnimated(true);
-    if (!block.completed) setStrikeAnimated(false);
-    wasCompleted.current = block.completed;
-  }, [block.completed]);
+  if (wasCompleted !== block.completed) {
+    setWasCompleted(block.completed);
+    setStrikeAnimated(block.completed);
+  }
 
   useLayoutEffect(() => {
     const handle: BlockLineHandle = {
