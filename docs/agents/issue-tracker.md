@@ -68,7 +68,7 @@ A grilling session's decision record is an issue: the summary in the body, the f
 
 ## Triage state mapping
 
-The triage skill's four routes render here as **states**, not labels. Confirm the names against `list_issue_statuses` before writing this table; the defaults below are the Eng team's names in Kale's workspace.
+The triage skill's four routes render here as **states**, not labels. Confirm the names against `list_issue_statuses` before writing this table; the defaults below are the Eng team's names in Redkale's workspace.
 
 | Route | Here |
 |---|---|

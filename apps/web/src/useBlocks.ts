@@ -30,9 +30,9 @@ export function useBlocks(listId: string) {
     chains.current.set(id, next);
   }
 
+  // SheetSection is keyed by list.id, so a new list starts with null state.
   useEffect(() => {
     let active = true;
-    commit(null);
     void api.fetchBlocks(listId).then((fetched) => {
       if (active) commit(sorted(fetched));
     });
@@ -42,7 +42,6 @@ export function useBlocks(listId: string) {
       for (const timer of currentTimers.values()) clearTimeout(timer);
       currentTimers.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listId]);
 
   function patchLocal(id: string, patch: Partial<Block>) {

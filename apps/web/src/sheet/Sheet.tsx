@@ -1,6 +1,5 @@
 import {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -53,9 +52,11 @@ export function Sheet({
   const sheetRef = useRef<HTMLDivElement>(null);
   const focusSeq = useRef(0);
 
-  useEffect(() => {
+  const [previousName, setPreviousName] = useState(list.name);
+  if (previousName !== list.name) {
+    setPreviousName(list.name);
     setTitle(list.name);
-  }, [list.name]);
+  }
 
   const registerRef = useCallback(
     (id: string, handle: BlockLineHandle | null) => {
